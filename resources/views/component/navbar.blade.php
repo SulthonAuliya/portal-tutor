@@ -15,13 +15,9 @@
                             <div class="main-menu d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">                                                                                          
-                                        <li class="active"><a href="index.html">Beranda</a></li>
+                                        <li class="active"><a href="{{ route('beranda') }}">Beranda</a></li>
                                         <li>
-                                            <div class="search-container">
-                                                {{-- <input type="text" placeholder="Cari Pengguna..">
-                                                <button type="submit" class="search-button"><i class="fa fa-search"></i></button> --}}
-                                                <!-- Button trigger modal -->
-                                            </div>
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modalSearch">Search</a>
                                         </li>
                                         <!-- Button -->
                                         @guest
@@ -31,8 +27,8 @@
                                             <li class="button-header d-none d-lg-inline-block">
                                                 <a href="#" class="btn btns btn3" data-bs-toggle="modal" data-bs-target="#modalRegist">Sign Up</a>
                                             </li>
-                                            <li class="button-header d-lg-none"><a href="#" class="btn btns btn3">Sign Up</a></li>
-                                            <li class="button-header d-lg-none"><a href="login.html" class="btn btns btn3">Log in</a></li>
+                                            <li class="button-header d-lg-none"><a href="{{ route('register') }}" class="btn btns btn3">Sign Up</a></li>
+                                            <li class="button-header d-lg-none"><a href="{{ route('login') }}" class="btn btns btn3">Log in</a></li>
                                         @else
                                         <li>
                                             <a href="#">{{ Auth::user()->username }}</a>

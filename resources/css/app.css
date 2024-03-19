@@ -1,5 +1,6 @@
 body {
     font-family: 'Poppins' !important;
+    padding: 0 !important;
 }
 b{
     color: #000 !important;
@@ -27,4 +28,22 @@ b{
 .jumbotron img{
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
+}
+
+.w-100{
+    width: 100% !important;
+}
+
+/* Default style for modal backdrop */
+.modal-backdrop {
+    /* Add your default backdrop styles here */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 767px) {
+    /* Apply custom styles to modal backdrop on mobile */
+    .modal-backdrop {
+        background-color: #fff !important; /* Solid white */
+    }
 }

@@ -20,3 +20,11 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::prefix('admin')->group(function () {
+    
+// });
+Route::group(['namespace' => 'App\Http\Controllers'], function () {
+    Route::get('/beranda', 'PostController@index')->name('beranda');
+    Route::get('/get-bidang', 'PostController@getBidang')->name('ajax.get-bidang');
+    Route::get('/get-categories', 'PostController@getCategories')->name('ajax.get-categories');
+});

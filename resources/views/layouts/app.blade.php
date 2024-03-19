@@ -14,6 +14,7 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -201,5 +202,130 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Search-->
+    <div class="modal fade" id="modalSearch"  aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="true" >
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <div class="col-md-12 p-3">
+                                <div class="card-header">
+                                    <h1 class="text-center">Search Filter</h1>  
+                                </div>
+                                <div class="card-body">
+                                    <form action="">
+                                    <div class="row">
+                                            <div class="col-6 mt-3">
+                                                <select name="bidang"  data-width="100%" id="select2-bidang">
+                                                    <option value=""></option>
+                                                    <option value="b">Select sadjhads</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 mt-3">
+                                                <select name="category[]" data-width="100%" multiple="multiple" id="select2-category">
+                                                    <option value=""></option>
+                                                    <option value="a">Select Category</option>
+                                                    <option value="b">Select Category</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12 mt-3">
+                                                <input type="text" class="w-100" name="search">
+                                            </div>
+                                            <div class="col-12 mt-3">
+                                                <input type="submit" value="Search" class="btn btn-primary pull-right">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            // Function to populate Select2 with categories
+            function populateCategories(bidangId = null) {
+                $.ajax({
+                    url: "{{ route('ajax.get-categories') }}",
+                    type: "GET",
+                    data: {
+                        bidangId: bidangId // Pass selected bidang ID
+                    },
+                    success: function(data) {
+                        // Clear existing options
+                        $('#select2-category').empty();
+
+                        // Populate Select2 with new options
+                        $.each(data, function(index, option) {
+                            $('#select2-category').append('<option value="' + option.id + '">' + option.name + '</option>');
+                        });
+
+                        // Reinitialize Select2
+                        $('#select2-category').select2({
+                            dropdownParent: $("#modalSearch"),
+                            placeholder: "Select Categories"
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+            // Function to populate Select2 with bidang
+            function populateBidang() {
+                $.ajax({
+                    url: "{{ route('ajax.get-bidang') }}",
+                    type: "GET",
+                    success: function(data) {
+                        // Clear existing options
+                        $('#select2-bidang').empty();
+
+                        // Populate Select2 with new options
+                        $.each(data, function(index, option) {
+                            $('#select2-bidang').append('<option value="' + option.id + '">' + option.name + '</option>');
+                        });
+
+                        // Reinitialize Select2
+                        $('#select2-bidang').select2({
+                            dropdownParent: $("#modalSearch"),
+                            placeholder: "Select Categories"
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+            // Initialize Select2 for bidang dropdown
+            $('#select2-bidang').select2({
+                dropdownParent: $("#modalSearch"),
+                placeholder: "Select Bidang"
+                
+            });
+
+            // Initialize Select2 for categories dropdown
+            $('#select2-category').select2({
+                dropdownParent: $("#modalSearch"),
+                placeholder: "Select Categories",
+            });
+
+            // Event listener for change in bidang dropdown
+            $('#select2-bidang').on('change', function() {
+                var selectedBidangId = $(this).val();
+                populateCategories(selectedBidangId);
+            });
+
+            // Populate bidang and categories initially
+            populateBidang();
+            populateCategories();
+        });
+    </script>
 </body>
 </html>

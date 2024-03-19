@@ -30,7 +30,7 @@
                 <img class="img-fluid " src="{{ asset('storage/image/search.svg') }}" alt="tutor-search" style="width:25vw">
             </div>
             <div class="col-12 d-flex justify-content-center mt-3">
-                <button class="btn btn-primary p-4 fw-4" style="colos:#fff">Lets Begin!</button>
+                <a href="{{ route('beranda') }}" class="btn btn-primary p-4 fw-4" style="colos:#fff">Lets Begin!</a>
             </div>
         </div>
 
