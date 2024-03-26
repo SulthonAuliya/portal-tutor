@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sosmed', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->nullable();
-            $table->string('link')->nullable();
-            $table->enum('type',['custom', 'instagram', 'whatsapp', 'line', 'website', 'linkedin'])->default('custom');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->text('profile_pic')->nullable()->after('full_name');
+            $table->text('description')->nullable()->after('city');
         });
     }
 
@@ -29,6 +26,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sosmed');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('profile_pic');
+            $table->dropColumn('description');
+        });
     }
 };

@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sosmed', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->nullable();
-            $table->string('link')->nullable();
-            $table->enum('type',['custom', 'instagram', 'whatsapp', 'line', 'website', 'linkedin'])->default('custom');
-            $table->timestamps();
+        Schema::table('post', function (Blueprint $table) {
+            $table->text('title')->nullable()->after('video_url');
         });
     }
 
@@ -29,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sosmed');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('title');
+        });
     }
 };

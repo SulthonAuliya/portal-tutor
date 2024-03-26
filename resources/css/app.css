@@ -5,6 +5,12 @@ body {
 b{
     color: #000 !important;
 }
+.fixed-button {
+    position: fixed;
+    bottom: 20px; /* Adjust this value to set the distance from the bottom */
+    right: 20px; /* Adjust this value to set the distance from the right */
+    z-index: 1000; /* Set a higher z-index if necessary */
+}
 .logo a{
 	color: #fff;
 	text-decoration: none;
@@ -34,12 +40,34 @@ b{
     width: 100% !important;
 }
 
+.btn-primary{
+    background-color: #5D8BFF !important;
+}
+
+
+@media (min-width: 992px) {
+    .row .col-mds {
+        width: calc(100% / 6); /* Divide equally into 6 columns for horizontal stacking */
+    }
+}
+
+/* For screens smaller than laptop */
+@media (max-width: 991px) {
+    .row .col-xss-3 {
+        width: calc(100% / 3); /* Divide equally into 3 columns for 3x3 grid */
+    }
+}
+
 /* Default style for modal backdrop */
 .modal-backdrop {
     /* Add your default backdrop styles here */
     background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
 }
 
+
+.mw-30{
+    max-width: 30px !important;
+}
 /* Media query for mobile devices */
 @media (max-width: 767px) {
     /* Apply custom styles to modal backdrop on mobile */
@@ -47,3 +75,35 @@ b{
         background-color: #fff !important; /* Solid white */
     }
 }
+
+/* profile page */
+.btn-bd-primary {
+    --bd-violet-bg: #712cf9;
+    --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+
+    --bs-btn-font-weight: 600;
+    --bs-btn-color: var(--bs-white);
+    --bs-btn-bg: var(--bd-violet-bg);
+    --bs-btn-border-color: var(--bd-violet-bg);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: #6528e0;
+    --bs-btn-hover-border-color: #6528e0;
+    --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-bg: #5a23c8;
+    --bs-btn-active-border-color: #5a23c8;
+  }
+
+  .bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+
+  @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+    }
+  }

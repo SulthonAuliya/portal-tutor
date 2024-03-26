@@ -34,7 +34,7 @@
                                             <a href="#">{{ Auth::user()->username }}</a>
                                             <ul class="submenu">
                                                 <li>
-                                                    <a class="" href="{{ route('logout') }}">
+                                                    <a class="" href="{{ route('profile.index', Auth::user()->id) }}">
                                                         Profile
                                                     </a>
                                                 </li>

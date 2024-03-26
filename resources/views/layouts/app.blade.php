@@ -108,6 +108,15 @@
             </div>
         </div>
     </div>
+    @auth
+    <div class="fixed-button">
+        <div class="dropup rounded-circle">
+            <a href="" type="button" class="btn btn-primary btn-lg" title="Create Post">
+                <i class="fa fa-plus"></i>
+            </a>
+        </div>
+    </div>
+    @endauth
     <!-- Modal Register-->
     <div class="modal fade" id="modalRegist" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="true">
         <div class="modal-dialog modal-dialog-centered ">
