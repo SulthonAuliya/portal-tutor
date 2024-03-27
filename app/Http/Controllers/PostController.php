@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bidang;
 use App\Models\Categories;
+use App\Models\Kota;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,12 @@ class PostController extends Controller
 
         $posts = $posts->get();
         return view('Posts.beranda', compact('posts'));
+    }
+
+    public function getKota(){
+        $datas = Kota::get();
+
+        return response()->json($datas);
     }
 
     public function getBidang(){
@@ -36,5 +43,9 @@ class PostController extends Controller
         }
 
         return response()->json($datas);
+    }
+
+    public function create(Request $request){
+        return  view('Posts.create');
     }
 }

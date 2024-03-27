@@ -25,10 +25,15 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // });
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Route::get('/beranda', 'PostController@index')->name('beranda');
+    Route::get('/get-kota', 'PostController@getKota')->name('ajax.get-kota');
     Route::get('/get-bidang', 'PostController@getBidang')->name('ajax.get-bidang');
     Route::get('/get-categories', 'PostController@getCategories')->name('ajax.get-categories');
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/index/{user}', 'ProfileController@index')->name('index');
+    });
+
+    Route::prefix('posts')->name('post.')->group(function(){
+        Route::get('/create', 'PostController@create')->name('create');
     });
 });

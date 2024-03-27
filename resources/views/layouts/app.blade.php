@@ -111,7 +111,7 @@
     @auth
     <div class="fixed-button">
         <div class="dropup rounded-circle">
-            <a href="" type="button" class="btn btn-primary btn-lg" title="Create Post">
+            <a href="{{ Route('post.create') }}" type="button" class="btn btn-primary btn-lg" title="Create Post">
                 <i class="fa fa-plus"></i>
             </a>
         </div>
@@ -227,11 +227,11 @@
                                 </div>
                                 <div class="card-body">
                                     <form action="">
-                                    <div class="row">
+                                        <div class="row">
                                             <div class="col-6 mt-3">
                                                 <select name="bidang"  data-width="100%" id="select2-bidang">
                                                     <option value=""></option>
-                                                    <option value="b">Select sadjhads</option>
+                                                    <option value="b">Select Bidang</option>
                                                 </select>
                                             </div>
                                             <div class="col-6 mt-3">
@@ -338,5 +338,6 @@
             populateCategories();
         });
     </script>
+    @stack('addon-script')
 </body>
 </html>
