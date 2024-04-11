@@ -11,27 +11,32 @@
                       <div class="col-md-12">
                         <div class="card">
                           <div class="card-body">
-                            <form action="" method="post">
+                            <form action="{{route('post.store')}}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('POST')
                                 <div class="row p-3">
 
                                 <div class="col-6 mt-3">
                                     <select name="bidang_id"  data-width="100%" id="select2-bidang-create" required>
-                                        <option value=""></option>
+                                        <option value="">Select Bidang</option>
+                                        @foreach ($bidangs as $bidang)
+                                            <option value="{{ $bidang->id }}">{{ $bidang->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
                                 <div class="col-6 mt-3">
                                     <select name="category_id[]" data-width="100%" multiple="multiple" id="select2-category-create" required>
-                                        <option value=""></option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
                                 <div class="col-12 mt-3">
                                   <div class="fowm-group">
                                     <label for="formFileLg" class="form-label">Upload Image</label>
-                                    <input class="form-control form-control-lg" id="formFileLg" type="file" />
+                                    <input class="form-control form-control-lg" id="formFileLg" name="image_url" type="file" />
                                   </div>
                                 </div>
                                 
@@ -72,8 +77,8 @@
 
                                 </div>
                                 <div class="row pr-3">
-                                  <div class="col text-right">
-                                      <button type="submit" class="btn-color mb-3 p-2 px-4 border border-0">
+                                  <div class="col text-right d-flex justify-content-end">
+                                      <button type="submit" class="btn-color btn-primary  mb-3 p-2 px-4 border border-0">
                                         Tambah
                                       </button>
                                   </div>
@@ -158,7 +163,7 @@
 
                         // Populate Select2 with new options
                         $.each(data, function(index, option) {
-                            $('#select2-kota-create').append('<option value="' + option.id + '">' + option.name + '</option>');
+                            $('#select2-kota-create').append('<option value="' + option.name + '">' + option.name + '</option>');
                         });
 
                         // Reinitialize Select2
@@ -192,13 +197,11 @@
             // Event listener for change in bidang dropdown
             $('#select2-bidang-create').on('change', function() {
                 var selectedBidangId = $(this).val();
-                populateCategories(selectedBidangId);
+                populateCategories2(selectedBidangId);
             });
 
             // Populate bidang and categories initially
             populateKota2();
-            populateBidang2();
-            populateCategories2();
       });
   </script>
 @endpush

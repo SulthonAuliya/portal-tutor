@@ -13,12 +13,7 @@
                                   <p class="card-text">{!! $post->title !!}</p>
                                   <div class="d-flex justify-content-between align-items-center">
                                       <div class="btn-group">
-                                          <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                          @auth
-                                              @if (Auth::user()->id === $post->user_id)
-                                                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                              @endif
-                                          @endauth
+                                          <a href="{{route('post.show', $post->id)}}" class="btn btn-sm btn-outline-secondary">View</a>
                                       </div>
                                       <small class="text-body-secondary">{{ $post->created_at->format('d/m/Y') }}</small>
                                   </div>
