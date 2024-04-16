@@ -25,4 +25,8 @@ class Categories extends Model
         'bidang_id',
         'name',
     ];
+
+    public function bidang(){
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
 }

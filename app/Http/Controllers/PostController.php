@@ -45,7 +45,55 @@ class PostController extends Controller
         return response()->json($datas);
     }
 
-    public function create(Request $request){
-        return  view('Posts.create');
+    public function create(){
+        $bidangs = Bidang::get();
+        $categories = Categories::get();
+        return view('Posts.create', compact('bidangs', 'categories'));
+    }
+
+    public function store(Request $request){
+        $request->validate([
+            'bidang_id'     =>'required',
+            'category_id'   =>'required',
+            'title'         =>'required',
+            'tipe'          =>'required',
+            'lokasi'        =>'required',
+            'deskripsi'     =>'required',
+            'image_url'     =>'required',
+        ]);
+
+        
+
+        if ($request->hasFile('image_url')) {
+            $image = $request->file('image_url');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $image->move(public_path('images'), $imageName);
+            $imagePath = asset('images/' . $imageName);
+        }
+
+        $data = [
+            'user_id'       => Auth::user()->id,
+            'title'         => $request->title,
+            'description'   => $request->deskripsi,
+            'tipe'          => $request->tipe,
+            'lokasi'        => $request->lokasi,
+            'img_url'       => $imagePath,
+        ];
+
+        $post = Post::create($data);
+        $post->categories()->attach($request->category_id);
+        return redirect('beranda');
+    }
+
+    public function edit(Post $post){
+        $bidangs = Bidang::get();
+        $categories = Categories::get();
+        $selectedCategories = $post->categories->pluck('id')->toArray();
+        $kotas = Kota::get();
+        return view('Posts.edit', compact('post', 'bidangs', 'categories', 'selectedCategories', 'kotas'));
+    }
+
+    public function show(Post $post){
+        return view('Posts.show', compact('post'));
     }
 }

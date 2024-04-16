@@ -27,6 +27,9 @@ class Post extends Model
         'img_url',
         'video_url',
         'description',
+        'tipe',
+        'lokasi',
+        'title'
     ];
 
     public function categories(){

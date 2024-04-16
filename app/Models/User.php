@@ -61,7 +61,7 @@ class User extends Authenticatable
     }
 
     public function post(){
-        return $this->hasMany(Post::class, 'user_id');
+        return $this->hasMany(Post::class, 'user_id')->orderBy('created_at', 'desc');
     }
     
     public function tutoring(){

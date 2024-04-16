@@ -35,5 +35,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
     Route::prefix('posts')->name('post.')->group(function(){
         Route::get('/create', 'PostController@create')->name('create');
+        Route::get('/edit/{post}', 'PostController@edit')->name('edit');
+        Route::post('/store', 'PostController@store')->name('store');
+        Route::PUT('/update', 'PostController@update')->name('update');
+        Route::get('/show/{post}', 'PostController@show')->name('show');
     });
 });
