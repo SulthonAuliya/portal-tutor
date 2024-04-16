@@ -11,7 +11,7 @@
                       <div class="col-md-12">
                         <div class="card">
                           <div class="card-body">
-                            <form action="{{route('post.update')}}" method="post" enctype="multipart/form-data">
+                            <form action="{{route('post.update',  ['post' => $post->id])}}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <div class="row p-3">
@@ -20,7 +20,7 @@
                                     <select name="bidang_id"  data-width="100%" id="select2-bidang-create" required>
                                         <option value="">Select Bidang</option>
                                         @foreach ($bidangs as $bidang)
-                                            <option value="{{ $bidang->id }}" @if ($bidang->id == $post->categories[0]->bidang->id) selected @endif>{{ $bidang->name }}</option>
+                                            <option value="{{ $bidang->id }}" @if(count($post->categories) > 0) @if ($bidang->id == $post->categories[0]->bidang->id) selected @endif @endif>{{ $bidang->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -32,11 +32,19 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                {{-- TODO : Handle edit image by onchange ajax and input text of address img_url --}}
+                                
+                                <div class="col-12 mt-3 mb-3">
+                                  <div class="fowm-group">
+                                    <label for="formFileLg" class="form-label">Current Image (*new  image will be changed once saved)</label><br>
+                                    <img src="{{ $post->img_url }}" alt="current-image" width="50%" class="img-fluid rounded shadow-lg">
+                                  </div>
+                                </div>
+
                                 <div class="col-12 mt-3">
                                   <div class="fowm-group">
                                     <label for="formFileLg" class="form-label">Upload Image</label>
                                     <input class="form-control form-control-lg" id="formFileLg" name="image_url" type="file" />
+                                    <input type="hidden" name="old_image" value="{{ $post->img_url }}">
                                   </div>
                                 </div>
                                 
@@ -81,7 +89,7 @@
                                 <div class="row pr-3">
                                   <div class="col text-right d-flex justify-content-end">
                                       <button type="submit" class="btn-color btn-primary  mb-3 p-2 px-4 border border-0">
-                                        Tambah
+                                        Save
                                       </button>
                                   </div>
                                 </div>

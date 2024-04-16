@@ -31,13 +31,16 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/index/{user}', 'ProfileController@index')->name('index');
+        Route::get('/edit/{user}', 'ProfileController@edit')->name('edit');
+        Route::PUT('/update/{user}', 'ProfileController@update')->name('update');
     });
 
     Route::prefix('posts')->name('post.')->group(function(){
         Route::get('/create', 'PostController@create')->name('create');
         Route::get('/edit/{post}', 'PostController@edit')->name('edit');
         Route::post('/store', 'PostController@store')->name('store');
-        Route::PUT('/update', 'PostController@update')->name('update');
+        Route::PUT('/update/{post}', 'PostController@update')->name('update');
+        Route::get('/delete/{post}', 'PostController@delete')->name('delete');
         Route::get('/show/{post}', 'PostController@show')->name('show');
     });
 });

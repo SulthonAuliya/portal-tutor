@@ -1,9 +1,13 @@
 body {
     font-family: 'Poppins' !important;
     padding: 0 !important;
+    min-height: 1100px !important;
 }
 b{
     color: #000 !important;
+}
+pre{
+    font-family: 'Poppins' !important;
 }
 .fixed-button {
     position: fixed;
@@ -11,6 +15,12 @@ b{
     right: 20px; /* Adjust this value to set the distance from the right */
     z-index: 1000; /* Set a higher z-index if necessary */
 }
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
 .logo a{
 	color: #fff;
 	text-decoration: none;

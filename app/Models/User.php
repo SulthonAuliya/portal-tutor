@@ -25,6 +25,8 @@ class User extends Authenticatable
         'city',
         'phone_number',
         'role',
+        'description',
+        'profile_pic',
         'setting_bidang',
         'setting_interest',
     ];

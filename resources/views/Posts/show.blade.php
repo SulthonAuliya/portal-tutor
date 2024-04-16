@@ -4,14 +4,17 @@
     <main class="container mt-5">
         
         <div class="row">
-            <img class="bd-placeholder-img"   src="{!! $post->img_url !!}"aria-hidden="true" alt="Post Image">
+            <img class="bd-placeholder-img rounded shadow-lg"   src="{!! $post->img_url !!}"aria-hidden="true" alt="Post Image">
         </div>
         <div class="row g-5 mt-4">
             <div class="col-md-8">
             <h3 class="pb-4 mb-4 fst-italic border-bottom">
-                {{$post->categories[0]->bidang->name}} | @foreach ($post->categories as $category)
-                    <span>{{$category->name}}@if (!$loop->last), @endif</span>
-                @endforeach
+                @if(count($post->categories) > 0)
+                    {{ $post->categories[0]->bidang->name}} |  
+                    @foreach ($post->categories as $category)
+                        <span>{{$category->name}}@if (!$loop->last), @endif</span>
+                    @endforeach
+                @endif
             </h3>
         
             <article class="blog-post">

@@ -39,6 +39,11 @@
                                                     </a>
                                                 </li>
                                                 <li>
+                                                    <a class="" href="{{ route('profile.edit', Auth::user()->id) }}">
+                                                        Edit Profile
+                                                    </a>
+                                                </li>
+                                                <li>
                                                     <a class="" href="{{ route('logout') }}"
                                                     onclick="event.preventDefault();
                                                                     document.getElementById('logout-form').submit();">
