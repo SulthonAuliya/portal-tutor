@@ -7,13 +7,15 @@ use App\Models\Categories;
 use App\Models\Kota;
 use App\Models\Post;
 use App\Models\PostCategories;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use stdClass;
 
 class PostController extends Controller
 {
     public function index(){
-        $posts = Post::orderBy('created_at');
+        $posts = Post::orderBy('created_at', 'desc');
         if(!Auth::guest()){
 
         }
@@ -30,6 +32,14 @@ class PostController extends Controller
 
     public function getBidang(){
         $datas = Bidang::get();
+
+        // Create a new object with id 0 and name "all"
+        $allBidang = new stdClass();
+        $allBidang->id = 0;
+        $allBidang->name = "all";
+
+        // Prepend the new object to the beginning of the $datas array
+        $datas->prepend($allBidang);
 
         return response()->json($datas);
     }
@@ -138,5 +148,50 @@ class PostController extends Controller
 
     public function show(Post $post){
         return view('Posts.show', compact('post'));
+    }
+
+    public function search(Request $request){
+        $bidang     = $request->bidang ?? null;
+        $category   = $request->category ?? null;
+        $search     = $request->search ?? null;
+        $tipe       = $request->tipe ?? null;
+        if($tipe != null){
+            // dd("hello");
+            $users = [];
+            $posts = [];
+            if($tipe === 'profiles'){
+                $users = User::where('username', 'LIKE', '%' . $search . '%')->get();
+            }else if($tipe === 'posts'){
+                $posts = Post::where('title', 'LIKE', '%' . $search . '%')
+                    ->when($bidang != null && $bidang !=0 , function($q) use($bidang){
+                        $q->whereHas('categories.bidang', function($q) use($bidang){
+                            $q->where('bidang.id', $bidang);
+                        });
+                    })
+                    ->when($category != null && $category !=0 , function($q) use($category){
+                        $q->whereHas('categories', function($q) use($category){
+                            $q->where('categories.id', $category);
+                        });
+                    })
+                    ->get();
+            }
+        }else{
+            $users = User::where('username', 'LIKE', '%' . $search . '%')->limit(3)->get();
+            $posts = Post::where('title', 'LIKE', '%' . $search . '%')
+                    ->when($bidang != null && $bidang !=0 , function($q) use($bidang){
+                        $q->whereHas('categories.bidang', function($q) use($bidang){
+                            $q->where('bidang.id', $bidang);
+                        });
+                    })
+                    ->when($category != null && $category !=0 , function($q) use($category){
+                        $q->whereHas('categories', function($q) use($category){
+                            $q->where('categories.id', $category);
+                        });
+                    })
+                    ->limit(3)->get();
+        }
+
+        return view('Posts.berandaSearch', compact('users', 'posts'));
+        
     }
 }

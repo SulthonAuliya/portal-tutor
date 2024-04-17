@@ -26,6 +26,19 @@
                         
                         <div class="col-md-12 mt-3">
                             <div class="form-group">
+                                <label for="role" class="form-label">Role</label>
+                                <select class="form-control" name="role">
+                                    <option value="Tutee" {{ $user->role == 'Tutee' ? 'selected' : '' }}>Tutee</option>
+                                    <option value="Tutor" {{ $user->role == 'Tutor' ? 'selected' : '' }}>Tutor</option>
+                                </select>
+                            </div>
+                        </div>
+                        @error('tutor')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group">
                                 <label for="username" class="form-label">Username</label>
                                 <input type="text" name="username" class="form-control" value="{{$user->username}}" required>
                             </div>
@@ -83,31 +96,7 @@
                         @error('deskripsi')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
-                        {{-- <hr class="my-5">
-                        <h3>Edit Social medias</h3> --}}
-                        {{-- <div class="col-md-12 mt-5">
-                            @foreach (['instagram', 'line', 'whatsapp', 'website', 'linkedin', 'custom'] as $type)
-                                <div class="row">
-                                    <div class="col-12">
-                                        <label for="{{ ucfirst($type) }}" class="form-label">{{ ucfirst($type) }}</label>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label for="name_{{ $type }}" class="form-label">Name</label>
-                                            <input type="text" name="sosmed[{{ $type }}][name]" id="name_{{ $type }}" class="form-control" value="{{ $user->sosmed->where('type', $type)->first()->name ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label for="link_{{ $type }}" class="form-label">Link</label>
-                                            <input type="text" name="sosmed[{{ $type }}][link]" id="link_{{ $type }}" class="form-control" value="{{ $user->sosmed->where('type', $type)->first()->link ?? '' }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
 
-
-                        </div> --}}
                         <div class="col-md-12 mt-5">
                             <!-- Loop through existing SOSMED records -->
                             <div class="col-12">
@@ -115,7 +104,7 @@
                             </div>
                             @foreach ($user->sosmed as $sosmed)
                             <div class="card p-3 mb-3">
-                            <div class="row mt-3">
+                                <div class="row mt-3">
                                     <div class="col-2">
                                         <div class="form-group mt-2">
                                             <label class="form-label">Type</label>
@@ -136,14 +125,19 @@
                                             <input type="hidden" class="form-control" name="sosmed[{{ $loop->index }}][id]" value="{{ $sosmed->id }}">
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-5">
                                         <div class="form-group mt-2">
                                             <label class="form-label">Link</label>
                                             <input type="text" class="form-control" name="sosmed[{{ $loop->index }}][link]" value="{{ $sosmed->link }}">
                                         </div>
                                     </div>
+                                    <div class="col-1">
+                                        <a class="btn btn-danger delete-sosmed-btn">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
                             @endforeach
                             <div class="col-md-12 mt-5" id="sosmed-container">
                                 <!-- Existing SOSMED records will be displayed here -->
@@ -199,16 +193,37 @@ $(document).ready(function() {
                         $('<input>').attr('type', 'text').addClass('form-control').attr('name', 'sosmed[][name]')
                     )
                 ))
-                .append($('<div>').addClass('col-6').append(
+                .append($('<div>').addClass('col-5').append(
                     $('<div>').addClass('form-group').append(
                         $('<label>').addClass('form-label').text('Link'),
                         $('<input>').attr('type', 'text').addClass('form-control').attr('name', 'sosmed[][link]')
+                    )
+                ))
+                .append($('<div>').addClass('col-1').append(
+                    $('<button>').addClass('btn btn-danger delete-sosmed-btn').append(
+                        $('<i>').addClass('fa fa-trash')
                     )
                 ))
             );
 
         // Append SOSMED template to container
         $('#sosmed-container').append(sosmedTemplate);
+    });
+
+    // Delete SOSMED Button Event Listener
+    $(document).on('click', '.delete-sosmed-btn', function() {
+        let sosmedDiv = $(this).closest('.card');
+        let sosmedIdInput = sosmedDiv.find('input[name^="sosmed["][name$="][id]"]');
+        
+        // If SOSMED has an ID input, clear other fields instead of removing the section
+        if (sosmedIdInput.length > 0) {
+            sosmedDiv.find('input[type="text"], select').val('');
+            sosmedDiv.hide();
+        } else {
+            sosmedDiv.remove();
+        }
+        
+        return false; // Prevent form submission
     });
 
     // Adjust SOSMED indexes before form submission
@@ -225,8 +240,7 @@ $(document).ready(function() {
         });
     });
 });
-
-
 </script>
 @endpush
+
     

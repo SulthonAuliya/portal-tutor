@@ -43,6 +43,7 @@ class ProfileController extends Controller
             'full_name'         => $request->full_name,
             'city'              => $request->city,
             'phone_number'      => $request->phone_number,
+            'role'              => $request->role,
             'profile_pic'       => $imagePath,
         ];
 

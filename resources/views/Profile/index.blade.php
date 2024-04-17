@@ -43,18 +43,34 @@
                             <div class="card shadow-sm">
                                 <img src="{!! $post->img_url !!}" class="bd-placeholder-img card-img-top" width="100%" height="225" role="img" aria-label="Placeholder: Thumbnail" alt="Post Image">
                                 <div class="card-body">
-                                    <p class="card-text">{!! $post->title !!}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="btn-group">
-                                            <a href="{{route('post.show', $post->id)}}" class="btn btn-sm btn-outline-secondary">View</a>
-                                            @auth
-                                                @if (Auth::user()->id === $post->user_id)
-                                                    <a href="{{route('post.edit', $post->id)}}" class="btn btn-sm btn-warning">Edit</a>
-                                                    <a href="{{route('post.delete', $post->id)}}" class="btn btn-sm btn-danger">Delete</a>
-                                                @endif
-                                            @endauth
+                                    <div class="row">
+                                        <div class="col-10">
+                                            <p class="card-text">{!! $post->title !!}</p>
                                         </div>
-                                        <small class="text-body-secondary">{{ $post->created_at->format('d/m/Y') }}</small>
+                                        <div class="col-2">
+                                            <a href="{{route("profile.index", ["user" => $post->user->id])}}">
+                                                <img src="{!! $post->user->profile_pic !!}" class="rounded-circle profile-pic img-fluid" alt="Avatar" />
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <div class="btn-group">
+                                                <a href="{{route('post.show', $post->id)}}" class="btn btn-sm btn-outline-secondary mx-2">View</a>
+                                                @auth
+                                                @if (Auth::user()->id === $post->user_id)
+                                                <a href="{{route('post.edit', $post->id)}}" class="btn btn-sm btn-warning mx-2">Edit</a>
+                                                <a href="{{route('post.delete', $post->id)}}" class="btn btn-sm btn-danger mx-2">Delete</a>
+                                                @endif
+                                                @endauth
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="col-12 mt-2 d-flex justify-content-between align-items-center">
+                                            <small class="text-body-secondary badge">{{ $post->tipe }} | {{ $post->lokasi }}</small>
+                                            <small class="text-body-secondary">{{ $post->created_at->format('d/m/Y') }}</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

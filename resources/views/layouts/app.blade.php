@@ -109,14 +109,32 @@
         </div>
     </div>
     @auth
-    <div class="fixed-button">
-        <div class="dropup rounded-circle">
-            <a href="{{ Route('post.create') }}" type="button" class="btn btn-primary btn-lg" title="Create Post">
-                <i class="fa fa-plus"></i>
-            </a>
-        </div>
-    </div>
+        @if(Auth::user()->role === 'Tutee')
+            <div class="fixed-button">
+                <div class="btn-group dropup">
+                    <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ route('post.create') }}">Join Tutoring Session</a></li>
+                    </ul>
+                </div>
+            </div>
+        @else
+            <div class="fixed-button">
+                <div class="btn-group dropup">
+                    <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ route('post.create') }}">Create Post</a></li>
+                        <li><a class="dropdown-item" href="{{ route('post.create') }}">Create Tutoring Session</a></li>
+                    </ul>
+                </div>
+            </div>
+        @endif
     @endauth
+
     <!-- Modal Register-->
     <div class="modal fade" id="modalRegist" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="true">
         <div class="modal-dialog modal-dialog-centered ">
@@ -226,7 +244,7 @@
                                     <h1 class="text-center">Search Filter</h1>  
                                 </div>
                                 <div class="card-body">
-                                    <form action="">
+                                    <form action="{{route('post.search')}}" method="GET">
                                         <div class="row">
                                             <div class="col-6 mt-3">
                                                 <select name="bidang"  data-width="100%" id="select2-bidang">

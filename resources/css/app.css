@@ -54,6 +54,30 @@ pre{
     background-color: #5D8BFF !important;
 }
 
+.search-link {
+    text-decoration: none; /* Remove underline from link */
+    color: #333; /* Set text color */
+    transition: color 0.3s, transform 0.3s; /* Add transition effect for color and transform */
+    display: inline-block; /* Make link a block element */
+}
+
+.search-link:hover {
+    color: #666666a1; /* Change text color on hover */
+}
+
+.search-link h3 {
+    display: inline-block; /* Ensure the h3 and icon are on the same line */
+    text-decoration: underline;
+}
+
+.search-link i {
+    transition: transform 0.3s; /* Add transition effect for transform */
+}
+
+.search-link:hover i {
+    transform: translateX(5px); /* Move icon 5 pixels to the right on hover */
+}
+
 
 @media (min-width: 992px) {
     .row .col-mds {

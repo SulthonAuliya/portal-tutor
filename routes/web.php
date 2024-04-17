@@ -38,9 +38,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Route::prefix('posts')->name('post.')->group(function(){
         Route::get('/create', 'PostController@create')->name('create');
         Route::get('/edit/{post}', 'PostController@edit')->name('edit');
-        Route::post('/store', 'PostController@store')->name('store');
-        Route::PUT('/update/{post}', 'PostController@update')->name('update');
         Route::get('/delete/{post}', 'PostController@delete')->name('delete');
         Route::get('/show/{post}', 'PostController@show')->name('show');
+        Route::get('/search', 'PostController@search')->name('search');
+        Route::post('/store', 'PostController@store')->name('store');
+        Route::PUT('/update/{post}', 'PostController@update')->name('update');
     });
 });

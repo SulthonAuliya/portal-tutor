@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <main class="container mt-5">
+    <main class="container my-5">
         
         <div class="row">
             <img class="bd-placeholder-img rounded shadow-lg"   src="{!! $post->img_url !!}"aria-hidden="true" alt="Post Image">
