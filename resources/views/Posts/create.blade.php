@@ -2,14 +2,14 @@
 
 @section('content')
     <div class="container">
-        
              <!-- Main content -->
-              <section class="content mx-4">
+              <section class="content m-4">
                 <!-- /.container-fluid -->
                 <div class="dashboard-content">
                   <div class="row">
                       <div class="col-md-12">
                         <div class="card">
+                          <h1 class="text-center mt-5">Create Post</h1>
                           <div class="card-body">
                             <form action="{{route('post.store')}}" method="post" enctype="multipart/form-data">
                                 @csrf
@@ -17,7 +17,7 @@
                                 <div class="row p-3">
 
                                 <div class="col-6 mt-3">
-                                    <select name="bidang_id"  data-width="100%" id="select2-bidang-create" required>
+                                    <select name="bidang_id"  data-width="100%" id="select2-bidang-create" class="select2" required>
                                         <option value="">Select Bidang</option>
                                         @foreach ($bidangs as $bidang)
                                             <option value="{{ $bidang->id }}">{{ $bidang->name }}</option>
@@ -26,7 +26,7 @@
                                 </div>
 
                                 <div class="col-6 mt-3">
-                                    <select name="category_id[]" data-width="100%" multiple="multiple" id="select2-category-create" required>
+                                    <select name="category_id[]" data-width="100%" multiple="multiple" class="select2" id="select2-category-create" required>
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach

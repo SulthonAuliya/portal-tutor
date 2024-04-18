@@ -22,7 +22,7 @@
                     @if (count($users) > 0)
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-5">
                             @foreach ($users as $user)
-                                <div class="col-3 mb-3">
+                                <div class="col mb-3">
                                     <div class="card shadow-sm text-center p-5">
                                         <img src="{!! $user->profile_pic !!}" class="rounded-circle profile-pic mx-auto" alt="Avatar" />
                                         <h1 class="fw-light mt-5">{!! $user->username !!}</h1>

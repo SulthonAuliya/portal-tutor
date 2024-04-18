@@ -27,6 +27,15 @@
         @include('component.navbar')
 
         <main class="">
+            @if (Session::has('success'))
+                <div class="alert alert-success">
+                    {{ Session::get('success') }}
+                </div>
+            @elseif(Session::has('error'))
+                <div class="alert alert-danger">
+                    {{ Session::get('error') }}
+                </div>
+            @endif
             @yield('content')
         </main>
     </div>
@@ -128,7 +137,7 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('post.create') }}">Create Post</a></li>
-                        <li><a class="dropdown-item" href="{{ route('post.create') }}">Create Tutoring Session</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalCreateTutor" id="mdlSearch">Create Tutoring Session</a></li>
                     </ul>
                 </div>
             </div>
@@ -275,6 +284,63 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Modal create tutor sessions-->
+    <div class="modal fade" id="modalCreateTutor"  aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="true" >
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <div class="col-md-12 p-3">
+                                <div class="card-header">
+                                    <h1 class="text-center">Create Tutoring Session</h1>  
+                                </div>
+                                <div class="card-body">
+                                    <form action="{{route('tutor.store')}}" method="POST">
+                                        @csrf
+                                        <div class="row">
+                                            <div class="col-12 mt-3">
+                                                <label for="course_id" class="form-group">Search Course</label>
+                                                <select name="course_id"  data-width="100%" id="select2-course">
+                                                    <option value=""></option>
+                                                    <option value="b">Select Bidang</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="col-7 mx-auto" id="cardDetailPost" >
+                                                <div class="card shadow-sm m-5 ">
+                                                    <img src="" id="searchPostImg" class="bd-placeholder-img card-img-top" style="object-fit: cover;" width="100%" height="225" role="img" aria-label="Placeholder: Thumbnail" alt="Post Image">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-10">
+                                                                <p class="card-text" id="searchPostTitle"></p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-2">
+                                                            <div class="col-12 mt-3 d-flex justify-content-between align-items-center">
+                                                                <small class="text-body-secondary badge" id="searchPostCategory"></small>
+                                                                <small class="text-body-secondary" id="searchPostDate"></small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-12 mt-3">
+                                                <input type="submit" value="Create" class="btn btn-primary pull-right">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         $(document).ready(function() {
             // Function to populate Select2 with categories
@@ -299,6 +365,39 @@
                             dropdownParent: $("#modalSearch"),
                             placeholder: "Select Categories"
                         });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+            function getDetailCourse(courseId = null) {
+                $.ajax({
+                    url: "{{ route('ajax.getDetailCourse') }}",
+                    type: "GET",
+                    data: {
+                        courseId: courseId 
+                    },
+                    success: function(data) {
+                        if(data && Object.keys(data).length > 0){
+                            $('#cardDetailPost').show();
+                            $('#searchPostImg').attr('src', data['img_url']);
+                            $('#searchPostTitle').text(data['title']);
+                            $('#searchPostCategory').text(data['tipe'] + '|' + data['lokasi']);
+                            var createdAtDate = new Date(data['created_at']);
+    
+                            // Format the date to the desired format (d/m/Y)
+                            var formattedDate = createdAtDate.toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            });
+                            $('#searchPostDate').text(formattedDate);
+                        }else{
+                            $('#cardDetailPost').hide();
+                        }
+                        
                     },
                     error: function(xhr, status, error) {
                         console.error(error);
@@ -332,10 +431,42 @@
                 });
             }
 
+            function searchCourse() {
+                $.ajax({
+                    url: "{{ route('ajax.getCourseUser') }}",
+                    type: "GET",
+                    success: function(data) {
+                        // Clear existing options
+                        $('#select2-course').empty();
+
+                        // Populate Select2 with new options
+                        $.each(data, function(index, option) {
+                            $('#select2-course').append('<option value="' + option.id + '">' + option.title + '</option>');
+                        });
+
+                        // Reinitialize Select2
+                        $('#select2-course').select2({
+                            dropdownParent: $("#modalCreateTutor"),
+                            placeholder: "Select Course"
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
             // Initialize Select2 for bidang dropdown
             $('#select2-bidang').select2({
                 dropdownParent: $("#modalSearch"),
                 placeholder: "Select Bidang"
+                
+            });
+            
+            // Initialize Select2 for course dropdown
+            $('#select2-course').select2({
+                dropdownParent: $("#modalCreateTutor"),
+                placeholder: "Select Course"
                 
             });
 
@@ -349,6 +480,16 @@
             $('#select2-bidang').on('change', function() {
                 var selectedBidangId = $(this).val();
                 populateCategories(selectedBidangId);
+            });
+
+            $('#select2-course').on('change', function() {
+                var selectedCourseId = $(this).val();
+                getDetailCourse(selectedCourseId);
+            });
+
+            $('#mdlSearch').on('click', function() {
+                searchCourse();
+                $('#cardDetailPost').hide();
             });
 
             // Populate bidang and categories initially

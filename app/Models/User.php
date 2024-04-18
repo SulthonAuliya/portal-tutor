@@ -27,8 +27,7 @@ class User extends Authenticatable
         'role',
         'description',
         'profile_pic',
-        'setting_bidang',
-        'setting_interest',
+        'content_settings',
     ];
 
     /**

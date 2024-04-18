@@ -33,7 +33,7 @@
                                 </select>
                             </div>
                         </div>
-                        @error('tutor')
+                        @error('role')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
 
@@ -100,7 +100,7 @@
                         <div class="col-md-12 mt-5">
                             <!-- Loop through existing SOSMED records -->
                             <div class="col-12">
-                                <label class="form-label">Social Media</label>
+                                <h3 class="form-label">Social Media</h3>
                             </div>
                             @foreach ($user->sosmed as $sosmed)
                             <div class="card p-3 mb-3">

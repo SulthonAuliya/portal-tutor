@@ -61,7 +61,7 @@
                                                 @auth
                                                 @if (Auth::user()->id === $post->user_id)
                                                 <a href="{{route('post.edit', $post->id)}}" class="btn btn-sm btn-warning mx-2">Edit</a>
-                                                <a href="{{route('post.delete', $post->id)}}" class="btn btn-sm btn-danger mx-2">Delete</a>
+                                                <a href="{{route('post.delete', $post->id)}}" class="btn btn-sm btn-danger mx-2" onclick="return confirm('Are you sure you want to delete this post?')">Delete</a>
                                                 @endif
                                                 @endauth
                                             </div>
