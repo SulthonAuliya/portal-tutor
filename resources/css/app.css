@@ -65,6 +65,10 @@ pre{
     color: #666666a1; /* Change text color on hover */
 }
 
+.dropdown-hover li:hover a:hover{
+    background-color: rgba(0, 0, 0, 0.1) !important; /* Slightly darker background on hover */
+}
+
 .search-link h3 {
     display: inline-block; /* Ensure the h3 and icon are on the same line */
     text-decoration: underline;

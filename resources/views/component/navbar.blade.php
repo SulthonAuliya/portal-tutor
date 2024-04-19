@@ -30,6 +30,7 @@
                                             <li class="button-header d-lg-none"><a href="{{ route('register') }}" class="btn btns btn3">Sign Up</a></li>
                                             <li class="button-header d-lg-none"><a href="{{ route('login') }}" class="btn btns btn3">Log in</a></li>
                                         @else
+                                        <li class="active"><a href="{{ route('tutor.manage') }}">Tutor Session</a></li>
                                         <li>
                                             <a href="#">{{ Auth::user()->username }}</a>
                                             <ul class="submenu">

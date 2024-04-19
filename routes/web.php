@@ -51,6 +51,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
     
     Route::prefix('tutor')->name('tutor.')->group(function(){
         Route::post('/store', 'TutoringController@storeTutorSession')->name('store');
-
+        Route::post('/joinSession', 'TutoringController@joinSession')->name('joinSession');
+        Route::get('/manage-tutor', 'TutoringController@manageTutorSession')->name('manage');
     });
 });

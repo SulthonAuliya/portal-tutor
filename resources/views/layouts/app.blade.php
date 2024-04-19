@@ -19,6 +19,7 @@
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
 
     
 </head>
@@ -27,15 +28,20 @@
         @include('component.navbar')
 
         <main class="">
-            @if (Session::has('success'))
-                <div class="alert alert-success">
-                    {{ Session::get('success') }}
+            <div class="container">
+                <div class="mt-3">
+
+                    @if (Session::has('success'))
+                    <div class="alert alert-success">
+                        {{ Session::get('success') }}
+                    </div>
+                    @elseif(Session::has('error'))
+                    <div class="alert alert-danger">
+                        {{ Session::get('error') }}
+                    </div>
+                    @endif
                 </div>
-            @elseif(Session::has('error'))
-                <div class="alert alert-danger">
-                    {{ Session::get('error') }}
-                </div>
-            @endif
+            </div>
             @yield('content')
         </main>
     </div>
@@ -124,8 +130,8 @@
                     <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="true">
                         <i class="fa fa-plus"></i>
                     </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('post.create') }}">Join Tutoring Session</a></li>
+                    <ul class="dropdown-menu dropdown-hover">
+                        <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalJoinTutor">Join Tutoring Session</a></li>
                     </ul>
                 </div>
             </div>
@@ -135,7 +141,7 @@
                     <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="true">
                         <i class="fa fa-plus"></i>
                     </button>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-hover">
                         <li><a class="dropdown-item" href="{{ route('post.create') }}">Create Post</a></li>
                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalCreateTutor" id="mdlSearch">Create Tutoring Session</a></li>
                     </ul>
@@ -270,6 +276,39 @@
                                             </div>
                                             <div class="col-12 mt-3">
                                                 <input type="text" class="w-100" name="search">
+                                            </div>
+                                            <div class="col-12 mt-3">
+                                                <input type="submit" value="Search" class="btn btn-primary pull-right">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Join Tutor-->
+    <div class="modal fade" id="modalJoinTutor"  aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="true" >
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <div class="col-md-12 p-3">
+                                <div class="card-header">
+                                    <h1 class="text-center">Join Tutoring Session</h1>  
+                                </div>
+                                <div class="card-body">
+                                    <form action="{{route('tutor.joinSession')}}" method="POST">
+                                        @csrf
+                                        <div class="row">
+                                            <div class="col-12 mt-3">
+                                                <label for="form-control">Masukan Invitation Code</label>
+                                                <input type="text" class="w-100 form-text" name="invite_code" required>
                                             </div>
                                             <div class="col-12 mt-3">
                                                 <input type="submit" value="Search" class="btn btn-primary pull-right">

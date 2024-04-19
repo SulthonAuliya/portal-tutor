@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PesertaTutoring;
 use App\Models\TutorSession;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -53,5 +55,42 @@ class TutoringController extends Controller
             Log::info($e->getMessage());
         }
         return redirect()->back();
+    }
+
+    public function manageTutorSession(){
+        $tutors = TutorSession::when(Auth::user()->role === 'Tutor', function($q) {
+                                $q->where('tutor_id', Auth::user()->id);
+                            })->when(Auth::user()->role === 'Tutee', function($q) {
+                                $q->whereHas('pesertaTutor', function($q){
+                                    $q->where('user_id', Auth::user()->id);
+                                });
+                            })->orderBy('created_at', 'asc')->get();
+
+        return view('tutor.index', compact('tutors'));
+    }
+
+    public function joinSession(Request $request){
+        $code = $request->invite_code;
+        try{
+            $tutorSession = TutorSession::where(DB::raw('BINARY `invitation_code`'), $code)->first();
+            if ($tutorSession){
+                $user = Auth::user();
+                PesertaTutoring::create([
+                    'user_id'       => $user->id,
+                    'tutoring_id'   => $tutorSession->id,
+                ]);
+                $message = "Berhasil bergabung kedalam tutoring session!";
+                Session::flash('success', $message);
+            }else{
+                $message = "Tutoring session yang anda cari tidak ditemukan!";
+                Session::flash('error', $message);
+            }
+            return redirect()->back();
+        }catch(Exception $e){
+            $message = "Terjadi kesalahan dalam proses bergabung dengan tutoring session!";
+            Session::flash('error', $message);
+            Log::info($e->getMessage());
+            return redirect()->back();
+        }
     }
 }
