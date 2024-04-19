@@ -93,4 +93,8 @@ class TutoringController extends Controller
             return redirect()->back();
         }
     }
+    public function show(TutorSession $session){
+        $session->load('pesertaTutor', 'post', 'tutor');
+        return view('tutor.detail', compact('session'));
+    }
 }

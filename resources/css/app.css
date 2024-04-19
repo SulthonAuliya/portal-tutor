@@ -50,10 +50,16 @@ pre{
     width: 100% !important;
 }
 
+
 .btn-primary{
     background-color: #5D8BFF !important;
 }
-
+.btn-primary:hover{
+    background-color: #3870fc !important;
+}
+.primary-color{
+    color: #5D8BFF !important;
+}
 .search-link {
     text-decoration: none; /* Remove underline from link */
     color: #333; /* Set text color */

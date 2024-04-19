@@ -45,4 +45,8 @@ class TutorSession extends Model
     public function post(){
         return $this->belongsTo(Post::class, 'post_id');
     }
+    
+    public function tutor(){
+        return $this->belongsTo(User::class, 'tutor_id');
+    }
 }
