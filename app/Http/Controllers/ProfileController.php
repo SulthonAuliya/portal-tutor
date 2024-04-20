@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Session;
 class ProfileController extends Controller
 {
     public function index($id){
-        $user = User::with('post', 'sosmed')->find($id);
+        $user = User::with('post', 'sosmed', 'pesertaTutor.tutoring')->find($id);
         return view('Profile.index', compact('user'));
     }
 

@@ -25,7 +25,7 @@
 
     
 </head>
-<body>
+<body style="width: 100% !important">
     <div id="app"> 
         @include('component.navbar')
 

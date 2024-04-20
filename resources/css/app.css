@@ -2,7 +2,11 @@ body {
     font-family: 'Poppins' !important;
     padding: 0 !important;
     min-height: 1100px !important;
+    background-color: rgb(238, 236, 236) !important;
 }
+/* html,body{
+    overflow-x: wrap !important;
+} */
 b{
     color: #000 !important;
 }
@@ -55,7 +59,7 @@ pre{
     background-color: #5D8BFF !important;
 }
 .btn-primary:hover{
-    background-color: #3870fc !important;
+    background-color: #628efdc5 !important;
 }
 .primary-color{
     color: #5D8BFF !important;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BuktiTutoring;
 use App\Models\PesertaTutoring;
 use App\Models\TutorSession;
 use Exception;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use PDO;
 
 class TutoringController extends Controller
 {
@@ -75,17 +77,27 @@ class TutoringController extends Controller
             $tutorSession = TutorSession::where(DB::raw('BINARY `invitation_code`'), $code)->first();
             if ($tutorSession){
                 $user = Auth::user();
-                PesertaTutoring::create([
-                    'user_id'       => $user->id,
-                    'tutoring_id'   => $tutorSession->id,
-                ]);
-                $message = "Berhasil bergabung kedalam tutoring session!";
-                Session::flash('success', $message);
+                if($user->id != $tutorSession->tutor_id){
+                    $create = PesertaTutoring::firstOrCreate([
+                        'user_id'       => $user->id,
+                        'tutoring_id'   => $tutorSession->id,
+                    ]);
+                    if ($create->wasRecentlyCreated) {
+                        $message = "Berhasil bergabung ke dalam tutoring session!";
+                        Session::flash('success', $message);
+                    } else {
+                        $message = "Kamu sudah terdaftar dalam tutoring session ini!";
+                        Session::flash('error', $message);
+                    }
+                }else{
+                    $message = "Anda tidak bisa bergabung dengan tutor session anda sendiri!";
+                    Session::flash('error', $message);
+                }
             }else{
                 $message = "Tutoring session yang anda cari tidak ditemukan!";
                 Session::flash('error', $message);
             }
-            return redirect()->back();
+            return redirect()->route('tutor.detail', ['session' => $tutorSession]);
         }catch(Exception $e){
             $message = "Terjadi kesalahan dalam proses bergabung dengan tutoring session!";
             Session::flash('error', $message);
@@ -94,8 +106,16 @@ class TutoringController extends Controller
         }
     }
     public function show(TutorSession $session){
-        $session->load('pesertaTutor', 'post', 'tutor');
-        return view('tutor.detail', compact('session'));
+        $session->load('pesertaTutor', 'post', 'tutor', 'buktiTutor');
+        $peserta = [];
+        $buktiTutoring = [];
+        if($session->status === 2){
+            $peserta = PesertaTutoring::where('tutoring_id', $session->id)->where('status_kehadiran', 1)->get();
+            $buktiTutoring = BuktiTutoring::where('tutoring_id', $session->id)
+                                         ->get()
+                                         ->keyBy('user_id');
+        }
+        return view('tutor.detail', compact('session', 'peserta', 'buktiTutoring'));
     }
 
     public function mulaiSession(TutorSession $session){
@@ -160,4 +180,60 @@ class TutoringController extends Controller
             return redirect()->back();
         }
     }
+
+    public function uploadBuktiTutor(Request $request){
+        try{
+            $request->validate([
+                'img_url'   => 'required'
+            ]);
+            
+            if ($request->hasFile('img_url')) {
+                $image = $request->file('img_url');
+                $imageName = time().'.'.$image->getClientOriginalExtension();
+                $image->move(public_path('images'), $imageName);
+                $imagePath = asset('images/' . $imageName);
+            }
+
+            BuktiTutoring::create([
+                'user_id'       => Auth::user()->id,
+                'tutoring_id'   => $request->tutor_id,
+                'img_url'       => $imagePath
+            ]);
+            $message = "Bukti tutoring session berhasil di upload!";
+            Session::flash('success', $message);
+            return redirect()->back();
+        }catch(Exception $e){
+            $message = "Terjadi kesalahan dalam proses mengupload bukti tutoring!";
+            Session::flash('error', $message);
+            Log::info($e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function kehadiran(PesertaTutoring $peserta, Request $request){
+        if(Auth::user()->role === 'Tutor'){
+            try{
+                $request->validate([
+                    'status'   => 'required'
+                ]);
+
+                $peserta->update([
+                    'status_kehadiran' => $request->status
+                ]);
+                $message = "Presensi tutoring berhasil di lakukan!";
+                Session::flash('success', $message);
+                return redirect()->back();
+            }catch(Exception $e){
+                $message = "Terjadi kesalahan dalam proses presensi tutoring!";
+                Session::flash('error', $message);
+                Log::info($e->getMessage());
+                return redirect()->back();
+            }
+        }else{
+            $message = "Anda tidak dapat mengisis presensi tutoring!";
+            Session::flash('error', $message);
+            return redirect()->route('beranda');
+        }
+    }
+
 }
