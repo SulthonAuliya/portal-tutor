@@ -30,6 +30,7 @@
         @include('component.navbar')
 
         <main class="">
+            @if(Session::has('success') || Session::has('error'))
             <div class="container">
                 <div class="mt-3">
 
@@ -44,6 +45,7 @@
                     @endif
                 </div>
             </div>
+            @endif
             @yield('content')
         </main>
     </div>

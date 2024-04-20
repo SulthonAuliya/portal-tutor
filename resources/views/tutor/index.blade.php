@@ -32,8 +32,8 @@
                                     <td>{{ $tutor->post->title }}</td>
                                     <td class="text-center"><span class="fw-bolder" style="color: #5D8BFF; letter-spacing: 2px">{{ $tutor->invitation_code}}</span></td>
                                     <td class="text-center">{{ $tutor->created_at->format('d/m/Y')}}</td>
-                                    <td class="text-center">{{ $tutor->start_time ? $tutor->start_time->format('d/m/Y') : '-' }}</td>
-                                    <td class="text-center">{{ $tutor->end_time ? $tutor->end_time->format('d/m/Y') : '-' }}</td>
+                                    <td class="text-center">{{ $tutor->start_time ? \Carbon\Carbon::parse($tutor->start_time)->format('d/m/Y') : '-' }}</td>
+                                    <td class="text-center">{{ $tutor->end_time ? \Carbon\Carbon::parse($tutor->end_time)->format('d/m/Y') : '-' }}</td>
                                     <td class="text-center">
                                         @if ($tutor->status === 0)
                                         <span class="badge bg-secondary p-2 font-monospace" style="letter-spacing: 2px">Belum Mulai</span>
@@ -54,8 +54,10 @@
                                             <ul class="dropdown-menu dropdown-hover" aria-labelledby="dropdownMenuButton">
                                                 <li><a class="dropdown-item" href="{{route('tutor.detail', $tutor->id)}}">Detail</a></li>
                                                 @if (Auth::user()->role === 'Tutor')
-                                                <li><a class="dropdown-item" href="#">Batalkan</a></li>
-                                                <li><a class="dropdown-item" href="#">Delete</a></li>
+                                                    @if ($tutor->status != 3)
+                                                        <li><a class="dropdown-item" href="{{route('tutor.batal', $tutor->id)}}">Batalkan</a></li>
+                                                    @endif
+                                                <li><a class="dropdown-item" href="{{route('tutor.delete', $tutor->id)}}">Delete</a></li>
                                                 @endif
                                             </ul>
                                         </div>

@@ -16,7 +16,7 @@ class TutoringController extends Controller
 {
     public function storeTutorSession(Request $request){
         try{
-            $codeLength = 3;
+            $codeLength = 5;
             
             do {
                 // Generate a random string of specified length
@@ -96,5 +96,68 @@ class TutoringController extends Controller
     public function show(TutorSession $session){
         $session->load('pesertaTutor', 'post', 'tutor');
         return view('tutor.detail', compact('session'));
+    }
+
+    public function mulaiSession(TutorSession $session){
+        try{
+            $session->update([
+                'status'    => 1,
+                'start_time'=> now()
+            ]);
+            $message = "Tutoring session dimulai!";
+            Session::flash('success', $message);
+            return redirect()->back();
+        }catch(Exception $e){
+            $message = "Terjadi kesalahan dalam proses memulai tutoring session!";
+            Session::flash('error', $message);
+            Log::info($e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function endSession(TutorSession $session){
+        try{
+            $session->update([
+                'status'    => 2,
+                'end_time'=> now()
+            ]);
+            $message = "Tutoring session diselesaikan!";
+            Session::flash('success', $message);
+            return redirect()->back();
+        }catch(Exception $e){
+            $message = "Terjadi kesalahan dalam proses menyelesaikan tutoring session!";
+            Session::flash('error', $message);
+            Log::info($e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function batalSession(TutorSession $session){
+        try{
+            $session->update([
+                'status'    => 3
+            ]);
+            $message = "Tutoring session dibatalkan!";
+            Session::flash('success', $message);
+            return redirect()->back();
+        }catch(Exception $e){
+            $message = "Terjadi kesalahan dalam proses membatalkan tutoring session!";
+            Session::flash('error', $message);
+            Log::info($e->getMessage());
+            return redirect()->back();
+        }
+    }
+    public function deleteSession(TutorSession $session){
+        try{
+            $session->delete();
+            $message = "Tutoring session dihapus!";
+            Session::flash('success', $message);
+            return redirect()->back();
+        }catch(Exception $e){
+            $message = "Terjadi kesalahan dalam proses menghapus tutoring session!";
+            Session::flash('error', $message);
+            Log::info($e->getMessage());
+            return redirect()->back();
+        }
     }
 }

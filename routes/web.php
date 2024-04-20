@@ -54,5 +54,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
         Route::get('/detail/{session}', 'TutoringController@show')->name('detail');
         Route::post('/joinSession', 'TutoringController@joinSession')->name('joinSession');
         Route::get('/manage-tutor', 'TutoringController@manageTutorSession')->name('manage');
+        Route::get('/batalSession/{session}', 'TutoringController@batalSession')->name('batal');
+        Route::get('/deleteSession/{session}', 'TutoringController@deleteSession')->name('delete');
+        Route::get('/mulaiSession/{session}', 'TutoringController@mulaiSession')->name('mulai');
+        Route::get('/endSession/{session}', 'TutoringController@endSession')->name('end');
     });
 });
