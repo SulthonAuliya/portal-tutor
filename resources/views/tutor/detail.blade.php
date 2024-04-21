@@ -4,10 +4,22 @@
     <div class="container">
         <div class="card py-2 px-4 shadow bg-body rounded mt-3">
             <div class="row my-5 mx-4">
-                <div class="col-12 col-md-9">
+                <div class="col-12 mt-3 col-md-6">
                     <h1 class="text-center text-md-start fw-bold primary-color" style="text-shadow: 1px 1px 5px #489dff9f !important">Tutoring Session Detail</h1>
                 </div>
-                <div class="col-12 col-md-3 text-end">
+                <div class="col-12 mt-3 col-md-3 text-end">
+                    @auth
+                    @php
+                        $reviewer = $session->pesertaTutor->where('user_id', Auth::user()->id)->where('status_kehadiran', 1)->first();
+                        $ulasan = $session->ulasan->where('user_id', Auth::user()->id)->first();
+                        $ulasanTutor = $ulasan === null;
+                    @endphp
+                        @if ($session->status === 2 && $reviewer && $ulasanTutor)
+                        <a href="" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#tulisReview">Tulis Review</a>
+                        @endif
+                    @endauth
+                </div>
+                <div class="col-12 mt-3 col-md-3 text-end">
                     @if ($session->status === 2)
                     <a href="" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#listBuktiTutoring">Bukti Tutoring</a>
                     @endif
@@ -77,6 +89,7 @@
                                         <hr>
                                         <h5 class="primary-color ">{{ $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('d/m/Y') : '-' }} <br> {{ $session->end_time ? \Carbon\Carbon::parse($session->start_time)->format('H:i:s A') : '-' }}</h5>
                                     </div>
+                                    @auth
                                     @if ($session->tutor_id === Auth::user()->id && Auth::user()->role === 'Tutor')
                                         <div class="col-12 mt-5 mt-md-2">
                                             @if ($session->status === 0)
@@ -90,7 +103,7 @@
                                             <a href="{{route('tutor.batal', $session->id)}}" class="btn btn-danger w-100"  onclick="return confirm('Are you sure you want to cancel this tutoring session?')">Batalkan Sesi Tutoring</a>
                                             @endif
                                         </div>
-                                        @endif
+                                    @endif
                                         <div class="col-12 mt-1">
                                             @if ($session->status === 2)
                                                 @php
@@ -104,6 +117,7 @@
                                                 @endif
                                             @endif
                                         </div>
+                                    @endauth
                                 </div>
                             </div>
                         </div>
@@ -145,11 +159,13 @@
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-hover" aria-labelledby="dropdownMenuButton">
                                                     <li><a class="dropdown-item" href="{{route('profile.index', $data->user_id)}}">Detail</a></li>
-                                                    @if (Auth::user()->role === 'Tutor')
-                                                    <li><a class="dropdown-item bg-success text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 1])}}">Hadir</a></li>
-                                                    <li><a class="dropdown-item bg-warning text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 2])}}">Sakit</a></li>
-                                                    <li><a class="dropdown-item bg-primary text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 3])}}">Izin</a></li>
-                                                    @endif
+                                                    @auth
+                                                        @if (Auth::user()->role === 'Tutor' && $session->status != 2)
+                                                            <li><a class="dropdown-item bg-success text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 1])}}">Hadir</a></li>
+                                                            <li><a class="dropdown-item bg-warning text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 2])}}">Sakit</a></li>
+                                                            <li><a class="dropdown-item bg-primary text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 3])}}">Izin</a></li>
+                                                        @endif
+                                                    @endauth
                                                 </ul>
                                             </div>
                                         </td>
@@ -180,6 +196,42 @@
                                 </div>
                                 <div class="col-12 mt-3">
                                     <button type="submit" form="uploadBuktiForm" class="btn btn-primary w-100">Upload</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- modal tulis review --}}
+        <div class="modal fade" id="tulisReview" tabindex="-1" aria-labelledby="tulisReviewLabel" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-centered modal-lg"">
+                <div class="modal-content ">
+                    <div class="modal-header">
+                        <h3 class="modal-title text-center" id="tulisReviewLabel">Silahkan Review Tutor Anda!</h3>
+                    </div>
+                    <div class="modal-body p-5">
+                        <form method="POST" action="{{ route('tutor.reviewTutor') }}">
+                            @csrf
+                            <input type="hidden" name="tutor_id" id="tutorId" value="{{$session->id}}">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div id="starRating"></div>
+                                    <input type="hidden" id="starRatingValue" name="rating">
+                                </div>
+                                <div class="col-12">
+                                    <label for="description" class="form-label">Masukan review anda!</label>
+                                    <textarea type="text" class="form-control" name="description" required id="review" style="min-height: 100px"></textarea>
+                                    <div>Character Count: <span id="charCount">0</span>/300</div>
+                                    @error('description')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-primary w-100">Submit</button>
                                 </div>
                             </div>
                         </form>
@@ -257,5 +309,61 @@
         $('#datatable2').DataTable( {
             responsive: true
         } );
+        const maxChars = 300; // Set the maximum allowed character count
+const textarea = document.getElementById('review');
+const charCountDisplay = document.getElementById('charCount');
+
+function updateCharacterCount() {
+    const charCount = textarea.value.length; // Get the current character count
+    charCountDisplay.textContent = charCount; // Update the displayed count
+    
+    if (charCount >= maxChars) {
+        textarea.style.borderColor = 'red'; // Visual feedback for reaching the limit
+    } else {
+        textarea.style.borderColor = ''; // Reset border color
+    }
+    
+    return charCount;
+}
+
+textarea.addEventListener('input', () => {
+    const charCount = updateCharacterCount();
+    
+    // If the input is over the limit, trim the content
+    if (charCount > maxChars) {
+        textarea.value = textarea.value.substring(0, maxChars); // Trim content
+        updateCharacterCount(); // Update the count after trimming
+    }
+});
+
+textarea.addEventListener('paste', (e) => {
+    const pasteData = (e.clipboardData || window.clipboardData).getData('text'); // Get pasted text
+    const newCharCount = textarea.value.length + pasteData.length;
+
+    // If pasting would exceed the limit, prevent the paste and manually add trimmed text
+    if (newCharCount > maxChars) {
+        e.preventDefault();
+        const allowedText = pasteData.substring(0, maxChars - textarea.value.length);
+        textarea.value += allowedText; // Append trimmed text
+        updateCharacterCount(); // Update character count
+    }
+});
+
+// Initialize the character count on page load
+updateCharacterCount();
+
+        $(document).ready(function() {
+            // Inisialisasi RateYo dengan rating awal
+            $('#starRating').rateYo({
+                rating: 3, // Nilai awal (bisa diubah)
+                fullStar: true // Hanya izinkan penilaian penuh bintang
+            }).on("rateyo.change", function (e, data) {
+                const rating = data.rating; // Dapatkan nilai penilaian
+
+                // Simpan nilai penilaian dalam input tersembunyi untuk dikirimkan ke backend
+                $('#starRatingValue').val(rating);
+            });
+
+        });
 </script>
 @endpush

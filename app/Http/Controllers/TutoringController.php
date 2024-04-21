@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\BuktiTutoring;
 use App\Models\PesertaTutoring;
 use App\Models\TutorSession;
+use App\Models\UlasanTutoring;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,15 +80,21 @@ class TutoringController extends Controller
             if ($tutorSession){
                 $user = Auth::user();
                 if($user->id != $tutorSession->tutor_id){
-                    $create = PesertaTutoring::firstOrCreate([
-                        'user_id'       => $user->id,
-                        'tutoring_id'   => $tutorSession->id,
-                    ]);
-                    if ($create->wasRecentlyCreated) {
-                        $message = "Berhasil bergabung ke dalam tutoring session!";
-                        Session::flash('success', $message);
-                    } else {
-                        $message = "Kamu sudah terdaftar dalam tutoring session ini!";
+                    if($tutorSession->status != 2){
+
+                        $create = PesertaTutoring::firstOrCreate([
+                            'user_id'       => $user->id,
+                            'tutoring_id'   => $tutorSession->id,
+                        ]);
+                        if ($create->wasRecentlyCreated) {
+                            $message = "Berhasil bergabung ke dalam tutoring session!";
+                            Session::flash('success', $message);
+                        } else {
+                            $message = "Anda sudah terdaftar dalam tutoring session ini!";
+                            Session::flash('error', $message);
+                        }
+                    }else{
+                        $message = "Anda tidak bisa bergabung dengan tutor yang sudah selesai / dibatalkan!";
                         Session::flash('error', $message);
                     }
                 }else{
@@ -234,6 +242,37 @@ class TutoringController extends Controller
             Session::flash('error', $message);
             return redirect()->route('beranda');
         }
+    }
+
+    public function listTutoringByAuthor(User $user){
+        $user = $user->load('tutoring');
+        return view('Profile.listTutoring', compact('user'));
+    }
+
+    public function reviewTutor(Request $request){
+        try{
+            $request->validate([
+                'description'   => 'required|max:300'
+            ]);
+    
+            $data = [
+                'user_id'       => Auth::user()->id,
+                'tutoring_id'   => $request->tutor_id,
+                'rating'        => $request->rating,
+                'description'   => $request->description
+            ];
+
+            UlasanTutoring::create($data);
+            $message = "Review tutoring berhasil di submit! Terimakasih atas penilaian anda.";
+            Session::flash('success', $message);
+            return redirect()->back();
+        }catch(Exception $e){
+            $message = "Terjadi kesalahan dalam proses review tutoring!";
+            Session::flash('error', $message);
+            Log::info($e->getMessage());
+            return redirect()->back();
+        }
+
     }
 
 }

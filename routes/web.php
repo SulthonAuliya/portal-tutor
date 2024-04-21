@@ -53,6 +53,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
         Route::post('/store', 'TutoringController@storeTutorSession')->name('store');
         Route::get('/detail/{session}', 'TutoringController@show')->name('detail');
         Route::post('/joinSession', 'TutoringController@joinSession')->name('joinSession');
+        Route::post('/reviewTutor', 'TutoringController@reviewTutor')->name('reviewTutor');
         Route::post('/uploadBuktiTutor', 'TutoringController@uploadBuktiTutor')->name('uploadBuktiTutor');
         Route::get('/manage-tutor', 'TutoringController@manageTutorSession')->name('manage');
         Route::get('/batalSession/{session}', 'TutoringController@batalSession')->name('batal');
@@ -60,5 +61,6 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
         Route::get('/mulaiSession/{session}', 'TutoringController@mulaiSession')->name('mulai');
         Route::get('/endSession/{session}', 'TutoringController@endSession')->name('end');
         Route::get('/kehadiran/{peserta}', 'TutoringController@kehadiran')->name('kehadiran');
+        Route::get('/listTutoring/{user}', 'TutoringController@listTutoringByAuthor')->name('listTutor');
     });
 });

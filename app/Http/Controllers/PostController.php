@@ -11,6 +11,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use stdClass;
@@ -216,6 +217,7 @@ class PostController extends Controller
     }
 
     public function show(Post $post){
+        $post->load('tutorSession.ulasan.user');
         return view('Posts.show', compact('post'));
     }
 
@@ -229,7 +231,7 @@ class PostController extends Controller
             $users = [];
             $posts = [];
             if($tipe === 'profiles'){
-                $users = User::where('username', 'LIKE', '%' . $search . '%')->get();
+                $users = User::where('username', 'LIKE', '%' . $search . '%')->orWhere('full_name', 'LIKE', '%' . $search . '%')->get();
             }else if($tipe === 'posts'){
                 $posts = Post::where('title', 'LIKE', '%' . $search . '%')
                     ->when($bidang != null && $bidang !=0 , function($q) use($bidang){
@@ -245,7 +247,7 @@ class PostController extends Controller
                     ->get();
             }
         }else{
-            $users = User::where('username', 'LIKE', '%' . $search . '%')->limit(3)->get();
+            $users = User::where('username', 'LIKE', '%' . $search . '%')->orWhere('full_name', 'LIKE', '%' . $search . '%')->limit(3)->get();
             $posts = Post::where('title', 'LIKE', '%' . $search . '%')
                     ->when($bidang != null && $bidang !=0 , function($q) use($bidang){
                         $q->whereHas('categories.bidang', function($q) use($bidang){

@@ -10,8 +10,10 @@
                   <h1 class="fw-light mt-2">{!! $user->username ?? '' !!}</h1>
                   <h5 class="fw-light">{!! $user->full_name !!}</h5>
                   @if ($user->role === 'Tutor')
-                    <h5>Tutoring Session</h5>
-                    <h1 class="text-primary fw-bolder">{{ count($user->tutoring->where('status', 2))}}</h1>
+                    <a href="{{ route('tutor.listTutor', ['user' => $user->id])}} " style="text-decoration: none !important">
+                        <h5 >Tutoring Session Done</h5>
+                        <h1 class="text-primary fw-bolder">{{ count($user->tutoring->where('status', 2))}}</h1>
+                    </a>
                   @endif
                   <div class="lead text-body-secondary" style="white-space: pre; width:100% !important">{!! $user->description !!}</div>
                     <div class="row">

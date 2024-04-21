@@ -29,7 +29,7 @@ class ProfileController extends Controller
                 'username'      => 'required|unique:users,username,'.$user->id,
                 'email'         => 'required',
                 'full_name'     => 'required',
-                'description'   => 'nullable'
+                // 'description'   => 'nullable'
             ]);
             // dd($request->all());
 
@@ -55,31 +55,33 @@ class ProfileController extends Controller
 
             $user->update($data);
             // Loop through the sosmed data
-            foreach ($request->sosmed as $data) {
-                if (isset($data['id'])) {
-                    // If the record has an ID
-                    if (!empty($data['name']) && !empty($data['link'])) {
-                        // If name and link are not empty, update the existing record
-                        $sosmed = Sosmed::find($data['id']);
-                        $sosmed->update([
-                            'type' => $data['type'],
-                            'name' => $data['name'],
-                            'link' => $data['link']
-                        ]);
+            if($request->sosmed !== null){
+                foreach ($request->sosmed as $data) {
+                    if (isset($data['id'])) {
+                        // If the record has an ID
+                        if (!empty($data['name']) && !empty($data['link'])) {
+                            // If name and link are not empty, update the existing record
+                            $sosmed = Sosmed::find($data['id']);
+                            $sosmed->update([
+                                'type' => $data['type'],
+                                'name' => $data['name'],
+                                'link' => $data['link']
+                            ]);
+                        } else {
+                            // If name or link is empty, delete the record
+                            Sosmed::destroy($data['id']);
+                        }
                     } else {
-                        // If name or link is empty, delete the record
-                        Sosmed::destroy($data['id']);
+                        // If the record doesn't have an ID, create a new record
+                        $user->sosmed()->create([
+                            'user_id'   => $user->id,
+                            'type'      => $data['type'],
+                            'name'      => $data['name'],
+                            'link'      => $data['link']
+                        ]);
                     }
-                } else {
-                    // If the record doesn't have an ID, create a new record
-                    $user->sosmed()->create([
-                        'user_id'   => $user->id,
-                        'type'      => $data['type'],
-                        'name'      => $data['name'],
-                        'link'      => $data['link']
-                    ]);
-                }
             }
+        }
             $message = "Profile updated successfully.";
 
             // Flash the message to the session
