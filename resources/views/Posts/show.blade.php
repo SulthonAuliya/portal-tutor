@@ -131,7 +131,7 @@
                                             <div style="border-left:2px solid #c4c4c4;height:100%"></div>
                                         </div>
                                         <div class="col-7 d-flex align-items-center">
-                                            <div class="lead " style="white-space: pre-wrap; width:100% !important; overflow-wrap: break-word;"><p class="text-justify text-dark">{{$ulasan->description}}</p></div>
+                                            <div class="lead " style="white-space: pre-wrap; width:100% !important; overflow-wrap: break-word;"><p class="text-justify text-dark">{!! $ulasan->description !!}</p></div>
                                         </div>
                                     </div>
                                 </div>

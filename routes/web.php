@@ -25,6 +25,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // });
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Route::get('/beranda', 'PostController@index')->name('beranda');
+    Route::post('/readNotif', 'HomeController@readNotif')->name('ajax.read-notif');
+    Route::get('/get-notifCount', 'HomeController@getNotificationCount')->name('ajax.get-notifCount');
+    Route::get('/allnotif', 'HomeController@listNotif')->name('listNotif');
+    Route::get('/get-notif', 'HomeController@getNotification')->name('ajax.get-notif');
     Route::get('/get-kota', 'PostController@getKota')->name('ajax.get-kota');
     Route::get('/getCourseUser', 'PostController@getCourseUser')->name('ajax.getCourseUser');
     Route::get('/get-bidang', 'PostController@getBidang')->name('ajax.get-bidang');

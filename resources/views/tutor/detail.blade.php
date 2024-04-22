@@ -68,7 +68,7 @@
                                         <h5 class="opacity-75">Status</h5>
                                         <hr>
                                         <h5 class="primary-color ">
-                                            @if ($session->status === 0)
+                                            @if ($session->status === 0 || $session->status === null)
                                             <span class="badge bg-secondary p-md-2 font-monospace">Belum Mulai</span>
                                             @elseif ($session->status === 1)
                                             <span class="badge bg-primary p-md-2 font-monospace">Sedang berjalan</span>
@@ -92,14 +92,14 @@
                                     @auth
                                     @if ($session->tutor_id === Auth::user()->id && Auth::user()->role === 'Tutor')
                                         <div class="col-12 mt-5 mt-md-2">
-                                            @if ($session->status === 0)
+                                            @if ($session->status === 0 || $session->status === null)
                                             <a href="{{route('tutor.mulai', $session->id)}}" class="btn btn-primary w-100">Mulai Sesi Tutoring</a>
                                             @elseif ($session->status === 1)
                                             <a href="{{route('tutor.end', $session->id)}}" class="btn btn-success w-100">Selesaikan Sesi Tutoring</a>
                                             @endif
                                         </div>
                                         <div class="col-12 mt-1">
-                                            @if ($session->status === 0)
+                                            @if ($session->status === 0 || $session->status === null)
                                             <a href="{{route('tutor.batal', $session->id)}}" class="btn btn-danger w-100"  onclick="return confirm('Are you sure you want to cancel this tutoring session?')">Batalkan Sesi Tutoring</a>
                                             @endif
                                         </div>

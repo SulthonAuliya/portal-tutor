@@ -92,6 +92,48 @@ pre{
     transform: translateX(5px); /* Move icon 5 pixels to the right on hover */
 }
 
+.card-notif{
+    box-shadow: 2px 1px 4px #c0c0c0;
+    transition: .3s;
+}
+
+a .card-notif:hover{
+    opacity: .5;
+    background-color: #3333331c;
+}
+
+.read{
+    opacity: .5;
+    background-color: #33333396;
+}
+
+a.notifikasi-menu{
+    text-decoration: none !important; 
+    font-weight:100 !important;
+    font-size:13px !important;
+}
+
+a.notifikasi-menu li{
+    transition:.3s;
+}
+a.notifikasi-menu:hover li{
+    background-color: #b6b6b6;
+    opacity: .5;
+}
+
+a.normal-href{
+    text-decoration: underline !important;
+    font-weight:100 !important;
+    font-size:13px !important;
+    color: #000 !important;
+    padding: 0 !important;
+    transition: .3s;
+}
+a.normal-href:hover{
+    color: #b6b6b6;
+    opacity: .5;
+}
+
 
 @media (min-width: 992px) {
     .row .col-mds {
@@ -105,6 +147,7 @@ pre{
         width: calc(100% / 3); /* Divide equally into 3 columns for 3x3 grid */
     }
 }
+
 
 /* Default style for modal backdrop */
 .modal-backdrop {

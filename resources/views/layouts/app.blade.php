@@ -390,6 +390,105 @@
     </div>
     <script>
         $(document).ready(function() {
+            @auth
+            fetchNotificationsCount();
+            let interval = 30000;
+            setInterval(fetchNotificationsCount, interval);
+            // Function to fetch notifications and update the dropdown
+            function fetchNotificationsCount() {
+                $.ajax({
+                    url: '{{ route("ajax.get-notifCount") }}', // URL for the AJAX request
+                    type: 'GET', // HTTP method
+                    success: function(response) {
+                        var notificationCount = $('#notification-count'); // Badge for notification count
+
+                        // Check if there are notifications
+                        if (response > 0) {
+                            notificationCount.text(response); // Update the notification count badge
+                        } else {
+                            notificationCount.text(0); // Reset notification count
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching notifications:", error);
+                    }
+                }); // Closing the AJAX call
+            }
+            function fetchNotifications() {
+                $.ajax({
+                    url: '{{ route("ajax.get-notif") }}', // URL for the AJAX request
+                    type: 'GET', // HTTP method
+                    success: function(response) {
+                        var notificationList = $('#notification-list'); // The UL element in the dropdown
+                        var notificationCount = $('#notification-count'); // Badge for notification count
+                        notificationList.empty(); // Clear existing notifications
+
+                        // Check if there are notifications
+                        if (response.length > 0) {
+                            response.forEach(function(notification) {
+                                var listItem = `
+                                <a href="${notification.data.url}" class="p-0 mt-3 notifikasi-menu" data-notification-id="${notification.id}">
+                                    <li class="list-group-item">
+                                        ${notification.data.title} 
+                                    </li>
+                                </a>
+                                `;
+                                notificationList.append(listItem); // Append the notification to the list
+                            });
+
+                            notificationCount.text(response.length); // Update the notification count badge
+                        } else {
+                            // If there are no notifications, show a message
+                            var noNotifItem = `
+                                <li class="list-group-item text-center text-muted">
+                                    No notifications
+                                </li>
+                            `;
+                            notificationList.append(noNotifItem);
+                            notificationCount.text(0); // Reset notification count
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching notifications:", error);
+                    }
+                }); // Closing the AJAX call
+            }
+
+            // Fetch notifications when the dropdown is opened
+            $('#notification-dropdown-link').on('click', function() {
+                fetchNotifications(); // Call the function to fetch and display notifications
+            });
+
+            $('#notification-list').on('click', 'a.notifikasi-menu', function(event) {
+                event.preventDefault(); // Prevent immediate navigation
+                var notificationUrl = $(this).attr('href'); // Get the URL to redirect to
+                var notificationId = $(this).data('notification-id'); // Get the notification ID
+
+                // Mark the notification as read and then redirect
+                markNotificationAsRead(notificationId, notificationUrl);
+            });
+
+            function markNotificationAsRead(notificationId, redirectUrl) {
+                $.ajax({
+                    url: '{{ route("ajax.read-notif" ) }}', // Endpoint to mark notification as read
+                    type: 'POST', // Use POST method for state-changing operations
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        notif: notificationId // Include CSRF token for security
+                    },
+                    success: function(response) {
+                        // Redirect to the specified URL after the notification is marked as read
+                        window.location.href = redirectUrl; 
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error marking notification as read:", error);
+                        // In case of an error, you can still redirect to avoid user confusion
+                        window.location.href = redirectUrl;
+                    }
+                });
+            }
+
+            @endauth
             // Function to populate Select2 with categories
             function populateCategories(bidangId = null) {
                 $.ajax({

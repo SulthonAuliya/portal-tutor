@@ -7,6 +7,7 @@ use App\Models\PesertaTutoring;
 use App\Models\TutorSession;
 use App\Models\UlasanTutoring;
 use App\Models\User;
+use App\Notifications\UserSystemNotification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use PDO;
 
 class TutoringController extends Controller
 {
@@ -75,6 +75,7 @@ class TutoringController extends Controller
 
     public function joinSession(Request $request){
         $code = $request->invite_code;
+        DB::beginTransaction();
         try{
             $tutorSession = TutorSession::where(DB::raw('BINARY `invitation_code`'), $code)->first();
             if ($tutorSession){
@@ -89,6 +90,13 @@ class TutoringController extends Controller
                         if ($create->wasRecentlyCreated) {
                             $message = "Berhasil bergabung ke dalam tutoring session!";
                             Session::flash('success', $message);
+
+                            $recipient = User::find($tutorSession->tutor_id);
+                            $title = 'Seseorang baru saja bergabung dengan tutoring session anda!';
+                            $msg = $user->full_name . ' baru saja bergabung dengan tutoring session anda melalui invitation code!';
+                            $url = route('tutor.detail', ['session' => $tutorSession->id]);
+                            $recipient->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+                            DB::commit();
                         } else {
                             $message = "Anda sudah terdaftar dalam tutoring session ini!";
                             Session::flash('error', $message);
@@ -107,6 +115,7 @@ class TutoringController extends Controller
             }
             return redirect()->route('tutor.detail', ['session' => $tutorSession]);
         }catch(Exception $e){
+            DB::rollBack();
             $message = "Terjadi kesalahan dalam proses bergabung dengan tutoring session!";
             Session::flash('error', $message);
             Log::info($e->getMessage());
@@ -134,6 +143,18 @@ class TutoringController extends Controller
             ]);
             $message = "Tutoring session dimulai!";
             Session::flash('success', $message);
+
+            $recipient = User::find($session->tutor_id);
+            $title = 'Session yang anda ikuti sudah dimulai!';
+            $msg = 'Session anda dengan materi ' . $session->post->title . ' sudah dimulai!';
+            $url = route('tutor.detail', ['session' => $session->id]);
+            $recipient->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+            $broadcast = PesertaTutoring::where('tutoring_id', $session->id)->get();
+            foreach ($broadcast as $penerima){
+                $user = $penerima->user;
+                $user->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+            }
+
             return redirect()->back();
         }catch(Exception $e){
             $message = "Terjadi kesalahan dalam proses memulai tutoring session!";
@@ -151,6 +172,17 @@ class TutoringController extends Controller
             ]);
             $message = "Tutoring session diselesaikan!";
             Session::flash('success', $message);
+
+            $recipient = User::find($session->tutor_id);
+            $title = 'Session yang anda ikuti telah selesai!';
+            $msg = 'Session anda dengan materi ' . $session->post->title . ' telah selesai!';
+            $url = route('tutor.detail', ['session' => $session->id]);
+            $recipient->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+            $broadcast = PesertaTutoring::where('tutoring_id', $session->id)->get();
+            foreach ($broadcast as $penerima){
+                $user = $penerima->user;
+                $user->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+            }
             return redirect()->back();
         }catch(Exception $e){
             $message = "Terjadi kesalahan dalam proses menyelesaikan tutoring session!";
@@ -167,6 +199,19 @@ class TutoringController extends Controller
             ]);
             $message = "Tutoring session dibatalkan!";
             Session::flash('success', $message);
+
+            $recipient = User::find($session->tutor_id);
+            $title = 'Session yang anda ikuti telah dibatalkan';
+            $msg = 'Session anda dengan materi ' . $session->post->title . ' telah dibatalkan';
+            $url = route('tutor.detail', ['session' => $session->id]);
+            $recipient->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+            $broadcast = PesertaTutoring::where('tutoring_id', $session->id)->get();
+            foreach ($broadcast as $penerima){
+                $title = $title . ' oleh pihak mentor!';
+                $msg = $msg . ' oleh pihak mentor!';
+                $user = $penerima->user;
+                $user->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+            }
             return redirect()->back();
         }catch(Exception $e){
             $message = "Terjadi kesalahan dalam proses membatalkan tutoring session!";
@@ -209,6 +254,29 @@ class TutoringController extends Controller
             ]);
             $message = "Bukti tutoring session berhasil di upload!";
             Session::flash('success', $message);
+
+            $session = TutorSession::find($request->tutor_id);
+            $attendees = $session->pesertaTutor()->where('status_kehadiran', 1)->get();
+            $attendeeIds = $attendees->pluck('user_id');
+            $attendeeIds->push($session->tutor_id);
+            $proofs = $session->buktiTutor()->whereIn('user_id', $attendeeIds)->get();
+            $uploadedProofIds = $proofs->pluck('user_id');
+            $allUploaded = $attendeeIds->diff($uploadedProofIds)->isEmpty();
+            if($allUploaded){
+                $recipient = User::find($session->tutor_id);
+                $title = 'Semua partisipan telah mengupload bukti tutor!';
+                $msg = 'Semua partisipan dari tutoring session dengan materi ' . $session->post->title . ' telah mengupload bukti tutor.';
+                $url = route('tutor.detail', ['session' => $session->id]);
+                $recipient->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+                $broadcast = PesertaTutoring::where('tutoring_id', $session->id)->get();
+                foreach ($broadcast as $penerima){
+                    $title = $title . ' Silahkan berikan penilaian atas pengalaman anda.';
+                    $msg = $msg . ' Silahkan berikan penilaian atas pengalaman anda dalam melaksanakan seluruh rangkataian mentoring dengan mentor ' . $recipient->full_name;
+                    $user = $penerima->user;
+                    $user->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+                }
+            }
+
             return redirect()->back();
         }catch(Exception $e){
             $message = "Terjadi kesalahan dalam proses mengupload bukti tutoring!";
@@ -230,6 +298,28 @@ class TutoringController extends Controller
                 ]);
                 $message = "Presensi tutoring berhasil di lakukan!";
                 Session::flash('success', $message);
+
+                $session = TutorSession::find($peserta->tutoring_id);
+                switch($request->status) {
+                    case 1:
+                        $status = 'Hadir';
+                        break;
+                    case 2:
+                        $status = 'Sakit';
+                        break;
+                    case 3:
+                        $status = 'Izin';
+                        break;
+
+                    }
+                $title = 'Anda telah ditetapkan '. $status .' dalam tutoring session!';
+                $msg = 'Anda telah ditetapkan '. $status .' dalam tutoring session dengan materi ' . $session->post->title . '!';
+                $url = route('tutor.detail', ['session' => $session->id]);
+                $broadcast = PesertaTutoring::where('tutoring_id', $session->id)->get();
+                foreach ($broadcast as $penerima){
+                    $user = $penerima->user;
+                    $user->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+                }
                 return redirect()->back();
             }catch(Exception $e){
                 $message = "Terjadi kesalahan dalam proses presensi tutoring!";
@@ -265,6 +355,14 @@ class TutoringController extends Controller
             UlasanTutoring::create($data);
             $message = "Review tutoring berhasil di submit! Terimakasih atas penilaian anda.";
             Session::flash('success', $message);
+
+            $session = TutorSession::find($request->tutor_id)->first();
+            $recipient = User::find($session->tutor_id);
+            $title = Auth::user()->full_name . ' Telah menulis review untuk tutoring session anda!';
+            $msg =  Auth::user()->full_name . ' Telah menulis review untuk anda pada tutoring session dengan materi ' . $session->post->title . '!';
+            $url = route('tutor.detail', ['session' => $session->id]);
+            $recipient->notify(new UserSystemNotification(['title' => $title, 'message' => $msg, 'url' => $url]));
+
             return redirect()->back();
         }catch(Exception $e){
             $message = "Terjadi kesalahan dalam proses review tutoring!";

@@ -35,7 +35,7 @@
                                     <td class="text-center">{{ $tutor->start_time ? \Carbon\Carbon::parse($tutor->start_time)->format('d/m/Y') : '-' }}</td>
                                     <td class="text-center">{{ $tutor->end_time ? \Carbon\Carbon::parse($tutor->end_time)->format('d/m/Y') : '-' }}</td>
                                     <td class="text-center">
-                                        @if ($tutor->status === 0)
+                                        @if ($tutor->status === 0 || $tutor->status === null)
                                         <span class="badge bg-secondary p-2 font-monospace" style="letter-spacing: 2px">Belum Mulai</span>
                                         @elseif ($tutor->status === 1)
                                         <span class="badge bg-primary p-2 font-monospace" style="letter-spacing: 2px">Sedang berjalan</span>

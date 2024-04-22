@@ -19,6 +19,28 @@
                                         <li>
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#modalSearch">Search</a>
                                         </li>
+                                        <!-- Notification Dropdown -->
+                                        @auth
+                                            <li class="nav-item dropdown notification-dropdown">
+                                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" id="notification-dropdown-link">
+                                                    <i class="fa fa-bell"></i>
+                                                    <span class="bg-danger rounded px-3 text-light" id="notification-count">0</span>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-start pb-4" style="min-width: 300px; max-height: 500px; overflow-y: auto" aria-labelledby="navbarDropdown">
+                                                    <div class="row p-2">
+                                                        <div class="col-5">
+                                                            <h6 class="">Notifications</h6>
+                                                        </div>
+                                                        <div class="col-7">
+                                                            <a href="{{route('listNotif')}}" class="text-end normal-href">Show All Notifications</a>
+                                                        </div>
+                                                    </div>
+                                                    <ul id="notification-list" class="list-group">
+                                                        <!-- Notifications will be appended here -->
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        @endauth
                                         <!-- Button -->
                                         @guest
                                             <li class="button-header d-none d-lg-inline-block">
@@ -27,58 +49,32 @@
                                             <li class="button-header d-none d-lg-inline-block">
                                                 <a href="#" class="btn btns btn3" data-bs-toggle="modal" data-bs-target="#modalRegist">Sign Up</a>
                                             </li>
-                                            <li class="button-header d-lg-none"><a href="{{ route('register') }}" class="btn btns btn3">Sign Up</a></li>
-                                            <li class="button-header d-lg-none"><a href="{{ route('login') }}" class="btn btns btn3">Log in</a></li>
                                         @else
-                                        <li class="active"><a href="{{ route('tutor.manage') }}">Tutor Session</a></li>
-                                        <li>
-                                            <a href="#">{{ Auth::user()->username }}</a>
-                                            <ul class="submenu">
-                                                <li>
-                                                    <a class="" href="{{ route('profile.index', Auth::user()->id) }}">
-                                                        Profile
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="" href="{{ route('profile.edit', Auth::user()->id) }}">
-                                                        Edit Profile
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="" href="{{ route('profile.editPreferences', Auth::user()->id) }}">
-                                                        Preferences
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="" href="{{ route('logout') }}"
-                                                    onclick="event.preventDefault();
-                                                                    document.getElementById('logout-form').submit();">
-                                                        {{ __('Logout') }}
-                                                    </a>
-
-                                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                                        @csrf
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                            {{-- <li class="nav-item dropdown">
-                                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                                    {{ Auth::user()->name }}
-                                                </a>
-
-                                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                                    onclick="event.preventDefault();
-                                                                    document.getElementById('logout-form').submit();">
-                                                        {{ __('Logout') }}
-                                                    </a>
-
-                                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                                        @csrf
-                                                    </form>
-                                                </div>
-                                            </li> --}}
+                                            <li class="active"><a href="{{ route('tutor.manage') }}">Tutor Session</a></li>
+                                            <li>
+                                                <a href="#">{{ Auth::user()->username }}</a>
+                                                <ul class="submenu">
+                                                    <li>
+                                                        <a class="" href="{{ route('profile.index', Auth::user()->id) }}">
+                                                            Profile
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="" href="{{ route('profile.edit', Auth::user()->id) }}">
+                                                            Edit Profile
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="" href="{{ route('logout') }}"
+                                                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                           {{ __('Logout') }}
+                                                        </a>
+                                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                                            @csrf
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </li>
                                         @endguest
                                     </ul>
                                 </nav>
@@ -89,9 +85,6 @@
                     <div class="col-12">
                         <div class="mobile_menu d-block d-lg-none"></div>
                     </div>
-
-                    
-
                 </div>
             </div>
         </div>
