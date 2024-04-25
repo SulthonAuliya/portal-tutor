@@ -26,7 +26,7 @@
                                                     <i class="fa fa-bell"></i>
                                                     <span class="bg-danger rounded px-3 text-light" id="notification-count">0</span>
                                                 </a>
-                                                <div class="dropdown-menu dropdown-menu-start pb-4" style="min-width: 300px; max-height: 500px; overflow-y: auto" aria-labelledby="navbarDropdown">
+                                                <div class="dropdown-menu dropdown-menu-start pb-4" style="min-width: 300px; max-height: 500px; overflow-y: auto; overflow-x: hidden" aria-labelledby="navbarDropdown">
                                                     <div class="row p-2">
                                                         <div class="col-5">
                                                             <h6 class="">Notifications</h6>
@@ -49,6 +49,12 @@
                                             <li class="button-header d-none d-lg-inline-block">
                                                 <a href="#" class="btn btns btn3" data-bs-toggle="modal" data-bs-target="#modalRegist">Sign Up</a>
                                             </li>
+                                            <li class="button-header d-lg-none">
+                                                <a href="{{route('login')}}" class="btn btns btn3" >Login</a>
+                                            </li>
+                                            <li class="button-header d-lg-none">
+                                                <a href="{{route('register')}}" class="btn btns btn3" >Sign Up</a>
+                                            </li>
                                         @else
                                             <li class="active"><a href="{{ route('tutor.manage') }}">Tutor Session</a></li>
                                             <li>
@@ -57,6 +63,11 @@
                                                     <li>
                                                         <a class="" href="{{ route('profile.index', Auth::user()->id) }}">
                                                             Profile
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="" href="{{ route('profile.editPreferences', Auth::user()->id) }}">
+                                                            Preference
                                                         </a>
                                                     </li>
                                                     <li>

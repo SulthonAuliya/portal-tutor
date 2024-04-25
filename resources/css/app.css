@@ -128,6 +128,7 @@ a.normal-href{
     color: #000 !important;
     padding: 0 !important;
     transition: .3s;
+    display: inline !important;
 }
 a.normal-href:hover{
     color: #b6b6b6;

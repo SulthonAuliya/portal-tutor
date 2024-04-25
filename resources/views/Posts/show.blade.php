@@ -99,15 +99,27 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col-12">
+                            <!-- Overall Rating Section -->
                             <h1 class="text-primary">Reviews</h1>
+                            @if($averageRating > 0)
+                            <div class="d-flex align-items-center mb-3">
+                                <h2 class="me-3">Overall Rating:</h2>
+                                <div id="overallRating"></div>
+                                <h2>{{$averageRating}}</h2>
+                            </div>
+                            @else
+                            <p>No reviews yet.</p>
+                            @endif
+                        </div>
+                        <div class="col-12">
                             <hr class="w-100">
                         </div>
                         <div class="col-12 p-3">
                             @foreach ($post->tutorSession as $session)
                                 @foreach ($session->ulasan as $ulasan)
-                                <div class="card p-4 shadow-sm">
+                                <div class="card p-4 shadow-sm mt-3">
                                     <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-md-4 col-12">
                                             <div class="row">
                                                 <div class="col-4">
                                                     <a href="{{route("profile.index", ["user" => $ulasan->user->id])}}">
@@ -127,10 +139,10 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-1">
+                                        <div class="col-md-1 col-12">
                                             <div style="border-left:2px solid #c4c4c4;height:100%"></div>
                                         </div>
-                                        <div class="col-7 d-flex align-items-center">
+                                        <div class="col-md-7 col-12 d-flex align-items-center">
                                             <div class="lead " style="white-space: pre-wrap; width:100% !important; overflow-wrap: break-word;"><p class="text-justify text-dark">{!! $ulasan->description !!}</p></div>
                                         </div>
                                     </div>
@@ -148,6 +160,16 @@
 @push('addon-script')
 <script>
     $(document).ready(function() {
+        @if($averageRating > 0)
+        // Initialize RateYo for overall rating
+        $('#overallRating').rateYo({
+            rating: {{ $averageRating }}, // Set the calculated average rating
+            readOnly: true,
+            fullStar: true,
+            starWidth: "40px",
+            // starHeight: "100px" // Optional
+        });
+        @endif
         @foreach ($post->tutorSession as $session)
             @foreach ($session->ulasan as $ulasan)
                 // Inisialisasi RateYo dengan nilai penilaian dari database

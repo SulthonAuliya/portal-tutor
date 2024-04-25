@@ -142,15 +142,17 @@
                                     <td>{{ $data->user->full_name }}</td>
                                     <td>{{ $data->created_at->format('d/m/Y | H:i:s A') }}</td>
                                     <td class="text-center">
-                                        @if ($data->status_kehadiran === 0 || $data->status_kehadiran === null)
-                                        <span class="badge bg-secondary p-2 font-monospace" style="letter-spacing: 2px">-</span>
+                                        @if ($data->status_kehadiran === 0 || $data->status_kehadiran === null && $session->status === 2)
+                                            <span class="badge bg-danger p-2 font-monospace" style="letter-spacing: 2px">Tidak Hadir</span>
+                                        @elseif ($data->status_kehadiran === 0 || $data->status_kehadiran === null)
+                                            <span class="badge bg-secondary p-2 font-monospace" style="letter-spacing: 2px">-</span>
                                         @elseif ($data->status_kehadiran === 1)
                                             <span class="badge bg-success  p-2 font-monospace" style="letter-spacing: 2px">Hadir</span>
-                                            @elseif ($data->status_kehadiran === 2)
+                                        @elseif ($data->status_kehadiran === 2)
                                             <span class="badge bg-warning p-2 font-monospace" style="letter-spacing: 2px">Sakit</span>
-                                            @elseif ($data->status_kehadiran === 3)
+                                        @elseif ($data->status_kehadiran === 3)
                                             <span class="badge bg-primary p-2 font-monospace" style="letter-spacing: 2px">Izin</span>
-                                            @endif    
+                                        @endif    
                                         </td>
                                         <td class="text-center">
                                             <div class="dropdown">
@@ -162,8 +164,8 @@
                                                     @auth
                                                         @if (Auth::user()->role === 'Tutor' && $session->status != 2)
                                                             <li><a class="dropdown-item bg-success text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 1])}}">Hadir</a></li>
-                                                            <li><a class="dropdown-item bg-warning text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 2])}}">Sakit</a></li>
-                                                            <li><a class="dropdown-item bg-primary text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 3])}}">Izin</a></li>
+                                                            {{-- <li><a class="dropdown-item bg-warning text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 2])}}">Sakit</a></li>
+                                                            <li><a class="dropdown-item bg-primary text-light" href="{{route('tutor.kehadiran', ['peserta' => $data->id, 'status' => 3])}}">Izin</a></li> --}}
                                                         @endif
                                                     @endauth
                                                 </ul>

@@ -368,7 +368,7 @@
                                                         <div class="row mt-2">
                                                             <div class="col-12 mt-3 d-flex justify-content-between align-items-center">
                                                                 <small class="text-body-secondary badge" id="searchPostCategory"></small>
-                                                                <small class="text-body-secondary" id="searchPostDate"></small>
+                                                                <small class="text-body-secondary d-none d-md-inline" id="searchPostDate"></small>
                                                             </div>
                                                         </div>
                                                     </div>

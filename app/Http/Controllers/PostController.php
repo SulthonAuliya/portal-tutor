@@ -92,52 +92,92 @@ class PostController extends Controller
         return view('Posts.create', compact('bidangs', 'categories'));
     }
 
-    public function store(Request $request){
-        try{
-            $request->validate([
-                'bidang_id'     =>'required',
-                'category_id'   =>'required',
-                'title'         =>'required',
-                'tipe'          =>'required',
-                'lokasi'        =>'required',
-                'deskripsi'     =>'required',
-                'image_url'     =>'required',
-            ]);
+public function store(Request $request)
+{
+    try {
+        // Validate the request
+        $request->validate([
+            'bidang_id' => 'required',
+            'category_id' => 'required|array',
+            'title' => 'required|string|max:255',
+            'tipe' => 'required|string|in:online,offline,both',
+            'lokasi' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'image_url' => 'required|file|image|max:2048', // Adjust this if needed
+        ]);
 
-            
-
-            if ($request->hasFile('image_url')) {
-                $image = $request->file('image_url');
-                $imageName = time().'.'.$image->getClientOriginalExtension();
-                $image->move(public_path('images'), $imageName);
-                $imagePath = asset('images/' . $imageName);
+        // Determine if the bidang_id is a new name or an existing ID
+        $bidangId = $request->bidang_id;
+        if (!is_numeric($bidangId)) {
+            $existingBidang = Bidang::where('name', $bidangId)->first();
+            if (!$existingBidang) {
+                $newBidang = new Bidang();
+                $newBidang->name = $bidangId;
+                $newBidang->save();
+                $bidangId = $newBidang->id; // Set the new ID
+            } else {
+                $bidangId = $existingBidang->id; // Use the existing ID
             }
-
-            $data = [
-                'user_id'       => Auth::user()->id,
-                'title'         => $request->title,
-                'description'   => $request->deskripsi,
-                'tipe'          => $request->tipe,
-                'lokasi'        => $request->lokasi,
-                'img_url'       => $imagePath,
-            ];
-
-            $post = Post::create($data);
-            $post->categories()->attach($request->category_id);
-            $message = "Post created successfully.";
-
-            // Flash the message to the session
-            Session::flash('success', $message);
-            
-        }catch(Exception $e){
-            $message = "Failed to create post.";
-
-            // Flash the message to the session
-            Session::flash('error', $message);
-            Log::info($e->getMessage());
         }
-        return redirect()->route('profile.index', ['user' => $data['user_id']]);
+
+        // Handle the file upload for image_url
+        $imagePath = null;
+        if ($request->hasFile('image_url')) {
+            $image = $request->file('image_url');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images'), $imageName);
+            $imagePath = asset('images/' . $imageName);
+        }
+
+        // Create the new post data
+        $data = [
+            'user_id' => Auth::id(),
+            'bidang_id' => $bidangId, // Use the resolved bidang ID
+            'title' => $request->title,
+            'description' => $request->deskripsi,
+            'tipe' => $request->tipe,
+            'lokasi' => $request->lokasi,
+            'img_url' => $imagePath,
+        ];
+
+        // Create the post
+        $post = Post::create($data);
+
+        // Handle category attachment with new categories
+        $categoryIds = [];
+        foreach ($request->category_id as $category) {
+            if (is_numeric($category)) {
+                $categoryIds[] = (int)$category;
+            } else {
+                $existingCategory = Categories::where('name', $category)->first();
+                if (!$existingCategory) {
+                    $newCategory = new Categories();
+                    $newCategory->name = $category;
+                    $newCategory->bidang_id = $bidangId;
+                    $newCategory->save();
+                    $categoryIds[] = $newCategory->id; // Use the new category ID
+                } else {
+                    $categoryIds[] = $existingCategory->id; // Use existing ID
+                }
+            }
+        }
+
+        // Attach categories to the post
+        $post->categories()->attach($categoryIds);
+
+        // Success message
+        Session::flash('success', "Post created successfully.");
+        
+    } catch (Exception $e) {
+        // Error handling
+        Session::flash('error', "Failed to create post.");
+        Log::error("Post creation error: " . $e->getMessage());
     }
+
+    // Redirect after completion
+    return redirect()->route('profile.index', ['user' => Auth::id()]);
+}
+
 
     public function update(Post $post,Request $request){
         try{
@@ -218,7 +258,17 @@ class PostController extends Controller
 
     public function show(Post $post){
         $post->load('tutorSession.ulasan.user');
-        return view('Posts.show', compact('post'));
+        $reviews = $post->tutorSession->flatMap(function ($session) {
+            return $session->ulasan;
+        });
+    
+        // Calculate the average rating, ensuring there's at least one review
+        $averageRating = 0;
+        if ($reviews->count() > 0) {
+            $averageRating = $reviews->avg('rating');
+        }
+
+        return view('Posts.show', compact('post', 'averageRating'));
     }
 
     public function search(Request $request){

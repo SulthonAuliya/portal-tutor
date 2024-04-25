@@ -68,7 +68,7 @@ class TutoringController extends Controller
                                 $q->whereHas('pesertaTutor', function($q){
                                     $q->where('user_id', Auth::user()->id);
                                 });
-                            })->orderBy('created_at', 'asc')->get();
+                            })->orderBy('created_at', 'desc')->get();
 
         return view('tutor.index', compact('tutors'));
     }

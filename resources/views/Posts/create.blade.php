@@ -117,7 +117,23 @@
 
                         // Reinitialize Select2
                         $('#select2-category-create').select2({
-                            placeholder: "Search Categories"
+                            placeholder: "Search Categories",
+                            tags: true,  // Enable tagging
+                            multiple: true,
+                            createTag: function(params) {
+                                var term = $.trim(params.term);
+
+                                if (term === '') {
+                                    return null;
+                                }
+
+                                // Return a new tag object
+                                return {
+                                    id: term,  // Use the search term as the ID for the new tag
+                                    text: term,
+                                    newOption: true  // Indicate this is a new option
+                                };
+                            }
                         });
                     },
                     error: function(xhr, status, error) {
@@ -184,13 +200,44 @@
             
             // Initialize Select2 for bidang dropdown
             $('#select2-bidang-create').select2({
-                placeholder: "Select Bidang"
+                placeholder: "Select Bidang",
+                tags: true,  // Enable tagging
+                createTag: function(params) {
+                    var term = $.trim(params.term);
+
+                    if (term === '') {
+                        return null;
+                    }
+
+                    // Return a new tag object
+                    return {
+                        id: term,  // Use the search term as the ID for the new tag
+                        text: term,
+                        newOption: true  // Indicate this is a new option
+                    };
+                }
                 
             });
 
             // Initialize Select2 for categories dropdown
             $('#select2-category-create').select2({
                 placeholder: "Search Categories",
+                tags: true,  // Enable tagging
+                multiple: true,
+                createTag: function(params) {
+                    var term = $.trim(params.term);
+
+                    if (term === '') {
+                        return null;
+                    }
+
+                    // Return a new tag object
+                    return {
+                        id: term,  // Use the search term as the ID for the new tag
+                        text: term,
+                        newOption: true  // Indicate this is a new option
+                    };
+                }
             });
 
             // Event listener for change in bidang dropdown
